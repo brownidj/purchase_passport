@@ -12,7 +12,9 @@ struct Purchase_PassportApp: App {
                 Purchase.self,
                 PurchaseCategory.self,
                 FinancialTransaction.self,
-                Tag.self
+                Tag.self,
+                Contact.self,
+                Organisation.self
             ]
         )
     }

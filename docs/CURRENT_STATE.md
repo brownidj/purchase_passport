@@ -22,8 +22,9 @@ The project has completed:
 
 - Phase 1 (Project Foundation, also referred to as Task 001) on August 1, 2026
 - Phase 2 (Purchase Domain Model, also referred to as Task 002) on August 1, 2026
+- Phase 3 (Contacts, also referred to as Task 003) on August 1, 2026
 
-The next implementation target is Phase 3 (Contacts), unless the user explicitly requests a different phase.
+The next implementation target is Phase 4 (Documents), unless the user explicitly requests a different phase.
 
 At this stage, the source of truth is documentation:
 
@@ -65,7 +66,33 @@ Every task must follow this sequence:
 
 ---
 
-## 5. Scope Control Rules
+## 5. Task Lifecycle
+
+Each task should move through these lifecycle states:
+
+```text
+Requested
+    ↓
+Planning
+    ↓
+Implementation
+    ↓
+Manual Verification
+    ↓
+Documentation Updated
+    ↓
+Commit
+    ↓
+Push
+    ↓
+Completed
+```
+
+Each task simply advances through these states. This keeps tracking lightweight and scales cleanly as the project grows.
+
+---
+
+## 6. Scope Control Rules
 
 - Work on one task or one phase at a time.
 - Do not implement future phases pre-emptively.
@@ -75,7 +102,7 @@ Every task must follow this sequence:
 
 ---
 
-## 6. Documentation Update Policy
+## 7. Documentation Update Policy
 
 When documentation changes:
 
@@ -86,6 +113,37 @@ When documentation changes:
 
 ---
 
-## 7. Next Expected Development Flow
+## 8. Standard Development Workflow
 
-When implementation resumes, work should start with Phase 3 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.
+For every task:
+
+1. Read the project documentation.
+2. Explain the proposed implementation.
+3. List files to be modified.
+4. Implement only the requested task.
+5. Update documentation if required.
+6. Recommend manual verification.
+7. Wait for verification.
+8. Stage changes.
+9. Create a Git commit.
+10. Push to origin/main.
+11. Record the completed task in this document.
+
+---
+
+## 9. Git Workflow
+
+Every completed task should result in a single Git commit.
+
+Typical sequence:
+
+git status
+git add -A
+git commit -m "<message>"
+git push
+
+---
+
+## 10. Next Expected Development Flow
+
+When implementation resumes, work should start with Phase 4 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.

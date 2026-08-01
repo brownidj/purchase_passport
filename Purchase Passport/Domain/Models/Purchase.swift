@@ -38,6 +38,8 @@ final class Purchase {
 
     var tags: [Tag]
 
+    var contacts: [Contact]
+
     init(
         name: String,
         shortDescription: String? = nil,
@@ -63,7 +65,8 @@ final class Purchase {
         updatedAt: Date = .now,
         category: PurchaseCategory? = nil,
         transactions: [FinancialTransaction] = [],
-        tags: [Tag] = []
+        tags: [Tag] = [],
+        contacts: [Contact] = []
     ) {
         self.name = name
         self.shortDescription = shortDescription
@@ -90,5 +93,6 @@ final class Purchase {
         self.category = category
         self.transactions = transactions
         self.tags = tags
+        self.contacts = contacts
     }
 }

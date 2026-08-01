@@ -92,3 +92,13 @@ They apply to all production code and tests unless an exception is explicitly ap
 - Keep Markdown links valid and use repository-relative links inside `docs/`.
 - Limit changes to requested scope; avoid opportunistic refactoring.
 - Summarise all created/modified files at task completion.
+
+---
+
+## 9. Source Control
+
+- One logical task per commit.
+- Use Conventional Commit messages.
+- Push only after successful manual verification.
+- Do not rewrite published history.
+- Do not create commits unless explicitly requested.

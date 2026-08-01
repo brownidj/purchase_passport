@@ -25,3 +25,22 @@ That document defines:
 ## Repository Note
 
 This repository includes documentation plus early implementation foundation work (Phase 1 completed on August 1, 2026). Ongoing implementation should follow the phased plan and architecture boundaries unless explicitly changed by approved documentation updates.
+
+## Development Workflow
+
+Development is performed in small, self-contained tasks.
+
+Before starting work:
+
+1. Read `docs/CURRENT_STATE.md`.
+2. Review `docs/IMPLEMENTATION_PLAN.md`.
+3. Read `docs/ARCHITECTURE.md` if structural changes are involved.
+4. Implement only the approved task.
+
+After implementation:
+
+1. Review the changes.
+2. Perform manual verification in Xcode.
+3. Update `docs/CURRENT_STATE.md`.
+4. Commit and push to GitHub.
+5. Proceed to the next approved task.
