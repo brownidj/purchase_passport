@@ -7,6 +7,13 @@ struct Purchase_PassportApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [AppBootstrapMetadata.self])
+        .modelContainer(
+            for: [
+                Purchase.self,
+                PurchaseCategory.self,
+                FinancialTransaction.self,
+                Tag.self
+            ]
+        )
     }
 }

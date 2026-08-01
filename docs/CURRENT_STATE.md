@@ -18,9 +18,12 @@ It defines:
 
 ## 2. Current Stage
 
-The project has completed Phase 1 (Project Foundation, also referred to as Task 001) as of August 1, 2026.
+The project has completed:
 
-The next implementation target is Phase 2 (Purchase Model), unless the user explicitly requests a different phase.
+- Phase 1 (Project Foundation, also referred to as Task 001) on August 1, 2026
+- Phase 2 (Purchase Domain Model, also referred to as Task 002) on August 1, 2026
+
+The next implementation target is Phase 3 (Contacts), unless the user explicitly requests a different phase.
 
 At this stage, the source of truth is documentation:
 
@@ -85,4 +88,4 @@ When documentation changes:
 
 ## 7. Next Expected Development Flow
 
-When implementation resumes, work should start with Phase 2 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.
+When implementation resumes, work should start with Phase 3 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.
