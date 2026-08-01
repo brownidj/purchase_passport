@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		63D3DB7B301DBB1600D4328A /* ARCHITECTURE.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB77301DBB1600D4328A /* ARCHITECTURE.md */; };
+		63D3DB7C301DBB1600D4328A /* FUNCTIONAL_SPECIFICATION.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB78301DBB1600D4328A /* FUNCTIONAL_SPECIFICATION.md */; };
+		63D3DB7D301DBB1600D4328A /* IMPLEMENTATION_PLAN.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB79301DBB1600D4328A /* IMPLEMENTATION_PLAN.md */; };
+		63D3DB83301DBC4200D4328A /* TESTING_STRATEGY.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB82301DBC4200D4328A /* TESTING_STRATEGY.md */; };
+		63D3DB85301DBE7700D4328A /* CURRENT_STATE.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB84301DBE7700D4328A /* CURRENT_STATE.md */; };
+		63D3DB87301DBE7E00D4328A /* CODING_STANDARDS.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB86301DBE7E00D4328A /* CODING_STANDARDS.md */; };
+		63D3DB89301DBE8100D4328A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 63D3DB88301DBE8100D4328A /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		63D3DB5B301DB38B00D4328A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +37,13 @@
 		63D3DB4D301DB38A00D4328A /* Purchase Passport.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Purchase Passport.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63D3DB5A301DB38B00D4328A /* Purchase PassportTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Purchase PassportTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63D3DB64301DB38B00D4328A /* Purchase PassportUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Purchase PassportUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		63D3DB77301DBB1600D4328A /* ARCHITECTURE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ARCHITECTURE.md; sourceTree = "<group>"; };
+		63D3DB78301DBB1600D4328A /* FUNCTIONAL_SPECIFICATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FUNCTIONAL_SPECIFICATION.md; sourceTree = "<group>"; };
+		63D3DB79301DBB1600D4328A /* IMPLEMENTATION_PLAN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = IMPLEMENTATION_PLAN.md; sourceTree = "<group>"; };
+		63D3DB82301DBC4200D4328A /* TESTING_STRATEGY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTING_STRATEGY.md; sourceTree = "<group>"; };
+		63D3DB84301DBE7700D4328A /* CURRENT_STATE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CURRENT_STATE.md; sourceTree = "<group>"; };
+		63D3DB86301DBE7E00D4328A /* CODING_STANDARDS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODING_STANDARDS.md; sourceTree = "<group>"; };
+		63D3DB88301DBE8100D4328A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,10 +92,12 @@
 		63D3DB44301DB38A00D4328A = {
 			isa = PBXGroup;
 			children = (
+				63D3DB7A301DBB1600D4328A /* docs */,
 				63D3DB4F301DB38A00D4328A /* Purchase Passport */,
 				63D3DB5D301DB38B00D4328A /* Purchase PassportTests */,
 				63D3DB67301DB38B00D4328A /* Purchase PassportUITests */,
 				63D3DB4E301DB38A00D4328A /* Products */,
+				63D3DB88301DBE8100D4328A /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,6 +109,19 @@
 				63D3DB64301DB38B00D4328A /* Purchase PassportUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		63D3DB7A301DBB1600D4328A /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				63D3DB82301DBC4200D4328A /* TESTING_STRATEGY.md */,
+				63D3DB77301DBB1600D4328A /* ARCHITECTURE.md */,
+				63D3DB78301DBB1600D4328A /* FUNCTIONAL_SPECIFICATION.md */,
+				63D3DB79301DBB1600D4328A /* IMPLEMENTATION_PLAN.md */,
+				63D3DB84301DBE7700D4328A /* CURRENT_STATE.md */,
+				63D3DB86301DBE7E00D4328A /* CODING_STANDARDS.md */,
+			);
+			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -212,6 +244,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63D3DB7B301DBB1600D4328A /* ARCHITECTURE.md in Resources */,
+				63D3DB87301DBE7E00D4328A /* CODING_STANDARDS.md in Resources */,
+				63D3DB83301DBC4200D4328A /* TESTING_STRATEGY.md in Resources */,
+				63D3DB7C301DBB1600D4328A /* FUNCTIONAL_SPECIFICATION.md in Resources */,
+				63D3DB85301DBE7700D4328A /* CURRENT_STATE.md in Resources */,
+				63D3DB89301DBE8100D4328A /* README.md in Resources */,
+				63D3DB7D301DBB1600D4328A /* IMPLEMENTATION_PLAN.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
