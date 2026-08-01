@@ -23,6 +23,7 @@ The project has completed:
 - Phase 1 (Project Foundation, also referred to as Task 001) on August 1, 2026
 - Phase 2 (Purchase Domain Model, also referred to as Task 002) on August 1, 2026
 - Phase 3 (Contacts, also referred to as Task 003) on August 1, 2026
+- Task 004 (Navigation, Purchase List, Purchase Detail View and Editor) on August 1, 2026
 
 The next implementation target is Phase 4 (Documents), unless the user explicitly requests a different phase.
 

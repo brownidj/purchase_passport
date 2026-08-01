@@ -14,7 +14,10 @@ Before implementing any phase, read:
 ## Phase Status
 
 - Phase 1 (Project Foundation): completed on August 1, 2026
-- Phases 2 onward: not started
+- Phase 2 (Purchase Model): completed on August 1, 2026
+- Phase 3 (Contacts): completed on August 1, 2026
+- Task 004 (Navigation, Purchase List, Purchase Detail View and Editor): completed on August 1, 2026
+- Phase 4 onward: not started
 
 ## Phase 1 – Project Foundation
 
