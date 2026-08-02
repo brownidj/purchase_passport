@@ -40,6 +40,12 @@ final class Purchase {
 
     var contacts: [Contact]
 
+    var documents: [StoredDocument]
+
+    var warranties: [Warranty]
+
+    var reminders: [Reminder]
+
     init(
         name: String,
         shortDescription: String? = nil,
@@ -66,7 +72,10 @@ final class Purchase {
         category: PurchaseCategory? = nil,
         transactions: [FinancialTransaction] = [],
         tags: [Tag] = [],
-        contacts: [Contact] = []
+        contacts: [Contact] = [],
+        documents: [StoredDocument] = [],
+        warranties: [Warranty] = [],
+        reminders: [Reminder] = []
     ) {
         self.name = name
         self.shortDescription = shortDescription
@@ -94,5 +103,8 @@ final class Purchase {
         self.transactions = transactions
         self.tags = tags
         self.contacts = contacts
+        self.documents = documents
+        self.warranties = warranties
+        self.reminders = reminders
     }
 }

@@ -17,7 +17,9 @@ Before implementing any phase, read:
 - Phase 2 (Purchase Model): completed on August 1, 2026
 - Phase 3 (Contacts): completed on August 1, 2026
 - Task 004 (Navigation, Purchase List, Purchase Detail View and Editor): completed on August 1, 2026
-- Phase 4 onward: not started
+- Phase 4 (Documents): completed on August 2, 2026
+- Phase 5 (Warranties and Reminders): completed on August 2, 2026
+- Phase 6 onward: not started
 
 ## Phase 1 – Project Foundation
 
