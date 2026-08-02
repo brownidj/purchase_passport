@@ -51,9 +51,6 @@ enum AppBootstrapSeeder {
             Purchase ID: PUR-20260802-0001
             Condition: New
             Seller Details: Tech World Townsville | 123 Flinders Street, Townsville QLD 4810 | +61 7 4771 2345 | sales@techworld.example | https://www.techworld.example
-            Service History (captured as notes until interaction/service models are implemented):
-            - 2026-09-15: Support Enquiry — Asked about battery optimisation settings. Outcome: Settings adjusted as recommended by support.
-            - 2027-03-10: Warranty Service — Trackpad intermittently unresponsive. Outcome: Trackpad assembly replaced under warranty.
             """,
             status: .active,
             purchaseDate: purchaseDate,
@@ -104,6 +101,90 @@ enum AppBootstrapSeeder {
             purchase: purchase
         )
 
+        let supportInteraction = Interaction(
+            occurredAt: date(fromISO8601: "2026-09-15"),
+            type: .other,
+            status: .resolved,
+            partyContacted: "Acme Support",
+            subject: "Support enquiry about battery optimisation settings",
+            summary: "Asked about battery optimisation settings.",
+            detailedNotes: "Settings adjusted as recommended by support.",
+            purchase: purchase
+        )
+
+        let serviceInteraction = Interaction(
+            occurredAt: date(fromISO8601: "2027-03-10"),
+            type: .warrantyClaim,
+            status: .resolved,
+            partyContacted: "Acme Service Centre",
+            subject: "Trackpad intermittently unresponsive",
+            summary: "Warranty service booking and diagnosis.",
+            detailedNotes: "Trackpad assembly replaced under warranty.",
+            purchase: purchase
+        )
+
+        let complaintCase = ComplaintCase(
+            title: "Trackpad fault resolution and response delay",
+            issueType: .complaint,
+            partyResponsible: "Acme Computing",
+            dateOpened: date(fromISO8601: "2027-03-06"),
+            status: .resolved,
+            desiredResolution: "Warranty repair and confirmation of issue resolution.",
+            consumerGuaranteeOrWarranty: "Manufacturer Warranty",
+            caseReferenceNumber: "CMP-20270306-ACME",
+            chronology: "Fault observed, support contacted, and service arranged.",
+            keyEvidence: "Interaction notes and service documentation.",
+            correspondence: "Support and service centre responses captured in interactions.",
+            responseDeadline: date(fromISO8601: "2027-03-12"),
+            commitmentsMade: "Service centre committed to inspect and resolve within one week.",
+            outcome: "Fault resolved under warranty.",
+            compensationDetails: "No out-of-pocket repair cost.",
+            dateClosed: date(fromISO8601: "2027-03-10"),
+            purchase: purchase
+        )
+
+        let serviceRecord = ServiceRecord(
+            serviceType: "Warranty Service",
+            serviceProvider: "Acme Service Centre",
+            serviceDate: date(fromISO8601: "2027-03-10"),
+            completionDate: date(fromISO8601: "2027-03-10"),
+            costAmount: 0,
+            currencyCode: "AUD",
+            workRequested: "Trackpad intermittently unresponsive.",
+            workCompleted: "Trackpad assembly replaced under warranty.",
+            serviceReferenceNumber: "SRV-20270310-ACME",
+            notes: "Completed under manufacturer warranty.",
+            purchase: purchase
+        )
+
+        let faultRecord = FaultRecord(
+            firstNoticedDate: date(fromISO8601: "2027-03-05"),
+            title: "Trackpad intermittently unresponsive",
+            detailedDescription: "Cursor stops responding intermittently during normal use.",
+            severity: .medium,
+            status: .resolved,
+            sellerOrManufacturerNotified: true,
+            notes: "Resolved via warranty service.",
+            purchase: purchase
+        )
+
+        let repairRecord = RepairRecord(
+            repairProvider: "Acme Service Centre",
+            bookingDate: date(fromISO8601: "2027-03-08"),
+            repairDate: date(fromISO8601: "2027-03-10"),
+            diagnosis: "Trackpad hardware issue",
+            workPerformed: "Replaced trackpad assembly",
+            totalCost: 0,
+            currencyCode: "AUD",
+            warrantyCoverage: true,
+            paymentStatus: .waived,
+            outcome: "Resolved",
+            followUpRequired: false,
+            notes: "No customer charge under warranty.",
+            purchase: purchase,
+            fault: faultRecord
+        )
+
         let receiptDocument = StoredDocument(
             title: "Receipt",
             category: .receipt,
@@ -134,8 +215,27 @@ enum AppBootstrapSeeder {
         purchase.transactions.append(transaction)
         purchase.warranties.append(warranty)
         purchase.reminders.append(reminder)
+        purchase.interactions.append(contentsOf: [
+            supportInteraction,
+            serviceInteraction
+        ])
+        purchase.complaintCases.append(complaintCase)
+        complaintCase.relatedInteractions.append(contentsOf: [
+            supportInteraction,
+            serviceInteraction
+        ])
+        purchase.serviceRecords.append(serviceRecord)
+        purchase.faultRecords.append(faultRecord)
+        purchase.repairRecords.append(repairRecord)
+        complaintCase.relatedFaults.append(faultRecord)
+        complaintCase.relatedRepairs.append(repairRecord)
+        faultRecord.relatedRepairs.append(repairRecord)
         purchase.documents.append(contentsOf: [
             receiptDocument,
+            warrantyDocument,
+            manualDocument
+        ])
+        complaintCase.relatedDocuments.append(contentsOf: [
             warrantyDocument,
             manualDocument
         ])

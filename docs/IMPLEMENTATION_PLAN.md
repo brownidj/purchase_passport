@@ -13,17 +13,20 @@ Before implementing any phase, read:
 
 ## Phase Status
 
-- Phase 1 (Project Foundation): completed on August 1, 2026
-- Phase 2 (Purchase Model): completed on August 1, 2026
-- Phase 3 (Contacts): completed on August 1, 2026
-- Task 004 (Navigation, Purchase List, Purchase Detail View and Editor): completed on August 1, 2026
-- Phase 4 (Documents): completed on August 2, 2026
-- Phase 5 (Warranties and Reminders): completed on August 2, 2026
-- Phase 6 onward: not started
+- Phase 1 (Task 001 – Project Foundation): completed on August 1, 2026
+- Phase 2 (Task 002 – Purchase Model): completed on August 1, 2026
+- Phase 3 (Task 003 – Contacts): completed on August 1, 2026
+- Phase 4 (Task 004 – Navigation, Purchase List, Purchase Detail View and Editor): completed on August 1, 2026
+- Phase 5 (Task 005 – Documents): completed on August 2, 2026
+- Phase 6 (Task 006 – Warranties and Reminders): completed on August 2, 2026
+- Phase 7 (Task 007 – Interactions and Timeline): completed on August 2, 2026
+- Phase 8 (Task 008 – Servicing, Faults and Repairs): completed on August 2, 2026
+- Phase 9 (Task 009 – Complaints, Claims and Disputes): completed on August 2, 2026
+- Phase 10 onward: not started
 
 ## Phase 1 – Project Foundation
 
-Alias: Task 001 – Project Foundation.
+Task 001.
 
 - Configure project
 - Folder structure
@@ -31,6 +34,8 @@ Alias: Task 001 – Project Foundation.
 - SwiftData container
 
 ## Phase 2 – Purchase Model
+
+Task 002.
 
 - `Purchase` entity and supporting enums
 - Financial value modeling (`Decimal` + currency)
@@ -41,11 +46,24 @@ Alias: Task 001 – Project Foundation.
 
 ## Phase 3 – Contacts
 
+Task 003.
+
 - Contact and organisation models
 - Reusable contact management
 - Link contacts to purchases
 
-## Phase 4 – Documents
+## Phase 4 – Navigation, Purchase List, Purchase Detail View and Editor
+
+Task 004.
+
+- Navigation structure for current sections
+- Purchase list
+- Purchase detail view
+- Purchase create/edit flow
+
+## Phase 5 – Documents
+
+Task 005.
 
 - Import
 - Storage
@@ -53,27 +71,35 @@ Alias: Task 001 – Project Foundation.
 - Organisation
 - Attachment metadata modelling
 
-## Phase 5 – Warranties and Reminders
+## Phase 6 – Warranties and Reminders
+
+Task 006.
 
 - Warranty records
 - Expiry tracking
 - Reminder support
 - Recurrence basics
 
-## Phase 6 – Interactions and Timeline
+## Phase 7 – Interactions and Timeline
+
+Task 007.
 
 - Communication log
 - Unified timeline integration
 - Timeline filtering basics
 
-## Phase 7 – Servicing, Faults and Repairs
+## Phase 8 – Servicing, Faults and Repairs
+
+Task 008.
 
 - Service history
 - Fault tracking
 - Repairs
 - Cost and outcome tracking
 
-## Phase 8 – Complaints, Claims and Disputes
+## Phase 9 – Complaints, Claims and Disputes
+
+Task 009.
 
 - Complaint/dispute record model
 - Complaint chronology
@@ -81,41 +107,53 @@ Alias: Task 001 – Project Foundation.
 - Status and deadline tracking
 - Integrations with fault, repair and interaction records
 
-## Phase 9 – Dashboard
+## Phase 10 – Dashboard
+
+Task 010.
 
 - Upcoming reminders
 - Warranty status
 - Recent activity
 - Actionable unresolved items
 
-## Phase 10 – Search and Filtering
+## Phase 11 – Search and Filtering
+
+Task 011.
 
 - Global search
 - Advanced filters
 - Saved searches
 
-## Phase 11 – Export and Backup
+## Phase 12 – Export and Backup
+
+Task 012.
 
 - PDF/report export
 - Archive export
 - Backup and restore
 - Record portability checks
 
-## Phase 12 – Security, Privacy and Settings
+## Phase 13 – Security, Privacy and Settings
+
+Task 013.
 
 - Sharing safeguards
 - Deletion confirmation and recovery policy
 - Optional app lock and privacy controls
 - Settings for workflow customization
 
-## Phase 13 – Templates and Customization
+## Phase 14 – Templates and Customization
+
+Task 014.
 
 - Purchase templates
 - Custom fields
 - Custom categories/types
 - Summary field preferences
 
-## Phase 14 – Stabilization and Release Readiness
+## Phase 15 – Stabilization and Release Readiness
+
+Task 015.
 
 - Schema migration validation
 - Performance and reliability hardening

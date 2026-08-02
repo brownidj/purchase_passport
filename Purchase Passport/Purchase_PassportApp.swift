@@ -17,6 +17,11 @@ struct Purchase_PassportApp: App {
                 StoredDocument.self,
                 Warranty.self,
                 Reminder.self,
+                Interaction.self,
+                ComplaintCase.self,
+                ServiceRecord.self,
+                FaultRecord.self,
+                RepairRecord.self,
                 AppBootstrapMetadata.self
             )
             try AppBootstrapSeeder.seedIfNeeded(in: sharedModelContainer.mainContext)

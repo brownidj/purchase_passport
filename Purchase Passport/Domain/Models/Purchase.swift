@@ -46,6 +46,16 @@ final class Purchase {
 
     var reminders: [Reminder]
 
+    var interactions: [Interaction]
+
+    var complaintCases: [ComplaintCase]
+
+    var serviceRecords: [ServiceRecord]
+
+    var faultRecords: [FaultRecord]
+
+    var repairRecords: [RepairRecord]
+
     init(
         name: String,
         shortDescription: String? = nil,
@@ -75,7 +85,12 @@ final class Purchase {
         contacts: [Contact] = [],
         documents: [StoredDocument] = [],
         warranties: [Warranty] = [],
-        reminders: [Reminder] = []
+        reminders: [Reminder] = [],
+        interactions: [Interaction] = [],
+        complaintCases: [ComplaintCase] = [],
+        serviceRecords: [ServiceRecord] = [],
+        faultRecords: [FaultRecord] = [],
+        repairRecords: [RepairRecord] = []
     ) {
         self.name = name
         self.shortDescription = shortDescription
@@ -106,5 +121,10 @@ final class Purchase {
         self.documents = documents
         self.warranties = warranties
         self.reminders = reminders
+        self.interactions = interactions
+        self.complaintCases = complaintCases
+        self.serviceRecords = serviceRecords
+        self.faultRecords = faultRecords
+        self.repairRecords = repairRecords
     }
 }

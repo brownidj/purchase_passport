@@ -24,7 +24,7 @@ That document defines:
 
 ## Repository Note
 
-This repository includes documentation plus early implementation foundation work (Phase 1 completed on August 1, 2026). Ongoing implementation should follow the phased plan and architecture boundaries unless explicitly changed by approved documentation updates.
+This repository includes documentation plus implementation through Phase 5 (Warranties and Reminders, completed on August 2, 2026). Ongoing implementation should follow the phased plan and architecture boundaries unless explicitly changed by approved documentation updates.
 
 ## Development Workflow
 
