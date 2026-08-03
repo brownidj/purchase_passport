@@ -932,4 +932,59 @@ struct Purchase_PassportTests {
         }
     }
 
+    @Test func backupRestoreWithReportRestoresValidArchivesAndSkipsInvalidOnes() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchases = [
+            Purchase(name: "Valid One", status: .active),
+            Purchase(name: "Will Become Invalid", status: .ordered)
+        ]
+
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let backupURL = tempRoot.appendingPathComponent("partial-restore.ppbackup", isDirectory: true)
+        try BackupService.exportBackup(for: purchases, to: backupURL)
+
+        let purchasesDirectory = backupURL.appendingPathComponent("purchases", isDirectory: true)
+        let archiveDirectories = try fileManager.contentsOfDirectory(
+            at: purchasesDirectory,
+            includingPropertiesForKeys: nil
+        )
+        let targetArchive = archiveDirectories.first { $0.lastPathComponent.contains("Will Become Invalid") }
+        if let targetArchive {
+            try fileManager.removeItem(at: targetArchive.appendingPathComponent("manifest.json"))
+        } else {
+            Issue.record("Expected to find exported archive to tamper with.")
+        }
+
+        let report = try BackupService.restoreBackupWithReport(at: backupURL)
+        #expect(report.restoredPurchases.count == 1)
+        #expect(report.restoredPurchases.first?.name == "Valid One")
+        #expect(report.issues.count == 1)
+        #expect(report.issues.first?.contains("Skipped purchases/") == true)
+    }
+
+    @Test func backupWriteRestoreReportCreatesReadableLogFile() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+
+        let report = BackupService.RestoreReport(
+            restoredPurchases: [Purchase(name: "Restored Purchase", status: .active)],
+            issues: ["Skipped purchases/broken.pparchive: manifest.json is missing."]
+        )
+
+        let logURL = try BackupService.writeRestoreReport(for: tempRoot, report: report)
+        #expect(fileManager.fileExists(atPath: logURL.path))
+
+        let text = try String(contentsOf: logURL, encoding: .utf8)
+        #expect(text.contains("Purchase Passport Restore Report"))
+        #expect(text.contains("Restored Purchases: 1"))
+        #expect(text.contains("Skipped Archives: 1"))
+        #expect(text.contains("Restored Purchase"))
+        #expect(text.contains("broken.pparchive"))
+    }
+
 }

@@ -53,6 +53,7 @@ struct AppRootView: View {
     @State private var operationAlertTitle = "Notice"
     @State private var operationAlertMessage: String?
     @State private var operationAlertURL: URL?
+    @State private var operationAlertDetails: String?
     @State private var draggedServiceRecordID: PersistentIdentifier?
     @State private var draggedFaultRecordID: PersistentIdentifier?
     @State private var isFaultSectionDropTargeted = false
@@ -175,6 +176,13 @@ struct AppRootView: View {
                     handleDocumentImport(result: result)
                 }
                 .alert(operationAlertTitle, isPresented: operationAlertBinding, actions: {
+                    if let operationAlertDetails, !operationAlertDetails.isEmpty {
+                        Button("Copy Details") {
+                            let pasteboard = NSPasteboard.general
+                            pasteboard.clearContents()
+                            pasteboard.setString(operationAlertDetails, forType: .string)
+                        }
+                    }
                     if let operationAlertURL {
                         Button("Reveal in Finder") {
                             NSWorkspace.shared.activateFileViewerSelecting([operationAlertURL])
@@ -194,6 +202,7 @@ struct AppRootView: View {
                 if !isPresented {
                     operationAlertMessage = nil
                     operationAlertURL = nil
+                    operationAlertDetails = nil
                 }
             }
         )
@@ -1182,7 +1191,8 @@ struct AppRootView: View {
                 presentOperationResult(
                     title: "Archive Exported With Issues",
                     message: "Validation found \(validationIssues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(validationIssues))",
-                    url: url
+                    url: url,
+                    details: validationIssues.joined(separator: "\n")
                 )
             }
         } catch {
@@ -1208,7 +1218,8 @@ struct AppRootView: View {
                 presentOperationResult(
                     title: "Backup Exported With Issues",
                     message: "Validation found \(validationIssues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(validationIssues))",
-                    url: url
+                    url: url,
+                    details: validationIssues.joined(separator: "\n")
                 )
             }
         } catch {
@@ -1256,7 +1267,8 @@ struct AppRootView: View {
 
     private func restoreFullBackup() {
         do {
-            let restoredPurchases = try AppRootWorkflowCoordinator.restoreFullBackup()
+            let restoreResult = try AppRootWorkflowCoordinator.restoreFullBackupWithReport()
+            let restoredPurchases = restoreResult.report.restoredPurchases
             let renames = AppRootWorkflowCoordinator.resolvePurchaseNameConflicts(
                 importedPurchases: restoredPurchases,
                 existingPurchases: purchases
@@ -1282,7 +1294,19 @@ struct AppRootView: View {
             if !documentIdentifierResolutions.isEmpty {
                 message += "\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
             }
-            presentOperationResult(title: "Backup Restored", message: message)
+            if !restoreResult.report.issues.isEmpty {
+                message += "\n\nSkipped \(restoreResult.report.issues.count) archive(s):\n\(AppRootFormatting.validationIssueSummary(restoreResult.report.issues))"
+            }
+            if let logURL = restoreResult.logURL {
+                message += "\n\nRestore report saved to:\n\(logURL.path)"
+            }
+            let title = restoredPurchases.isEmpty ? "Backup Restore Failed" : "Backup Restored"
+            presentOperationResult(
+                title: title,
+                message: message,
+                url: restoreResult.logURL ?? restoreResult.url,
+                details: restoreResult.report.issues.isEmpty ? nil : restoreResult.report.issues.joined(separator: "\n")
+            )
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
@@ -1305,7 +1329,8 @@ struct AppRootView: View {
                 presentOperationResult(
                     title: "Archive Validation Issues",
                     message: "Found \(result.issues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(result.issues))",
-                    url: result.url
+                    url: result.url,
+                    details: result.issues.joined(separator: "\n")
                 )
             }
         } catch {
@@ -1330,7 +1355,8 @@ struct AppRootView: View {
                 presentOperationResult(
                     title: "Backup Validation Issues",
                     message: "Found \(result.issues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(result.issues))",
-                    url: result.url
+                    url: result.url,
+                    details: result.issues.joined(separator: "\n")
                 )
             }
         } catch {
@@ -1342,10 +1368,11 @@ struct AppRootView: View {
         }
     }
 
-    private func presentOperationResult(title: String, message: String, url: URL? = nil) {
+    private func presentOperationResult(title: String, message: String, url: URL? = nil, details: String? = nil) {
         operationAlertTitle = title
         operationAlertMessage = message
         operationAlertURL = url
+        operationAlertDetails = details
     }
 }
 

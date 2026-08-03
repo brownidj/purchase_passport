@@ -1,6 +1,11 @@
 import Foundation
 
 struct BackupService {
+    struct RestoreReport: Equatable {
+        let restoredPurchases: [Purchase]
+        let issues: [String]
+    }
+
     struct BackupManifest: Codable, Equatable {
         let schemaVersion: Int
         let createdAt: Date
@@ -43,6 +48,7 @@ struct BackupService {
     private static let manifestFileName = "backup-manifest.json"
     private static let purchasesFolderName = "purchases"
     private static let backupSchemaVersion = 1
+    private static let restoreLogPrefix = "restore-report"
 
     @discardableResult
     static func exportBackup(for purchases: [Purchase], to backupURL: URL) throws -> BackupManifest {
@@ -191,6 +197,84 @@ struct BackupService {
         return purchases
     }
 
+    static func restoreBackupWithReport(at backupURL: URL) throws -> RestoreReport {
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: backupURL.path) else {
+            throw BackupError.backupFolderMissing
+        }
+
+        let manifestURL = backupURL.appendingPathComponent(manifestFileName)
+        guard fileManager.fileExists(atPath: manifestURL.path) else {
+            throw BackupError.manifestMissing
+        }
+
+        let manifestData = try Data(contentsOf: manifestURL)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let manifest: BackupManifest
+        do {
+            manifest = try decoder.decode(BackupManifest.self, from: manifestData)
+        } catch {
+            throw BackupError.invalidManifest
+        }
+
+        guard manifest.schemaVersion == backupSchemaVersion else {
+            throw BackupError.unsupportedSchemaVersion(manifest.schemaVersion)
+        }
+
+        guard manifest.purchaseCount == manifest.purchaseArchives.count else {
+            throw BackupError.invalidManifest
+        }
+
+        var seenArchivePaths = Set<String>()
+        for relativePath in manifest.purchaseArchives {
+            guard seenArchivePaths.insert(relativePath).inserted else {
+                throw BackupError.duplicateArchivePath(relativePath)
+            }
+            guard isSafeArchiveRelativePath(relativePath) else {
+                throw BackupError.invalidArchivePath(relativePath)
+            }
+        }
+
+        var restoredPurchases: [Purchase] = []
+        restoredPurchases.reserveCapacity(manifest.purchaseArchives.count)
+        var issues: [String] = []
+
+        for relativePath in manifest.purchaseArchives {
+            let archiveURL = backupURL.appendingPathComponent(relativePath)
+            let archiveIssues = PurchaseExportService.validateArchive(at: archiveURL)
+            if !archiveIssues.isEmpty {
+                issues.append("Skipped \(relativePath): \(archiveIssues.first ?? "Unknown archive issue.")")
+                continue
+            }
+
+            do {
+                let purchase = try PurchaseExportService.importArchive(at: archiveURL)
+                restoredPurchases.append(purchase)
+            } catch {
+                issues.append("Skipped \(relativePath): \(error.localizedDescription)")
+            }
+        }
+
+        return RestoreReport(restoredPurchases: restoredPurchases, issues: issues)
+    }
+
+    @discardableResult
+    static func writeRestoreReport(
+        for backupURL: URL,
+        report: RestoreReport
+    ) throws -> URL {
+        let timestamp = ISO8601DateFormatter()
+            .string(from: .now)
+            .replacingOccurrences(of: ":", with: "-")
+        let filename = "\(restoreLogPrefix)-\(timestamp).txt"
+        let logURL = backupURL.appendingPathComponent(filename)
+
+        let reportText = restoreReportText(backupURL: backupURL, report: report)
+        try reportText.write(to: logURL, atomically: true, encoding: .utf8)
+        return logURL
+    }
+
     private static func sanitize(_ value: String) -> String {
         let invalid = CharacterSet(charactersIn: "/:\\?%*|\"<>")
         let cleaned = value.components(separatedBy: invalid).joined(separator: "_")
@@ -207,5 +291,30 @@ struct BackupService {
 
         let path = NSString(string: value)
         return !path.isAbsolutePath
+    }
+
+    private static func restoreReportText(backupURL: URL, report: RestoreReport) -> String {
+        var lines: [String] = [
+            "Purchase Passport Restore Report",
+            "Generated: \(ISO8601DateFormatter().string(from: .now))",
+            "Backup: \(backupURL.path)",
+            "",
+            "Restored Purchases: \(report.restoredPurchases.count)",
+            "Skipped Archives: \(report.issues.count)"
+        ]
+
+        if !report.restoredPurchases.isEmpty {
+            lines.append("")
+            lines.append("Restored Purchase Names:")
+            lines.append(contentsOf: report.restoredPurchases.map { "- \($0.name)" })
+        }
+
+        if !report.issues.isEmpty {
+            lines.append("")
+            lines.append("Skipped/Issue Details:")
+            lines.append(contentsOf: report.issues.map { "- \($0)" })
+        }
+
+        return lines.joined(separator: "\n")
     }
 }

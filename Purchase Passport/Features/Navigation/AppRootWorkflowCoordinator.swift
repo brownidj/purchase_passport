@@ -233,6 +233,24 @@ struct AppRootWorkflowCoordinator {
         return try BackupService.restoreBackup(at: backupURL)
     }
 
+    static func restoreFullBackupWithReport() throws -> (url: URL, report: BackupService.RestoreReport, logURL: URL?) {
+        let backupURL = try openDirectoryURL(
+            title: "Restore Full Backup",
+            allowedContentTypes: [UTType(filenameExtension: "ppbackup")].compactMap { $0 }
+        )
+        let report = try BackupService.restoreBackupWithReport(at: backupURL)
+        do {
+            let logURL = try BackupService.writeRestoreReport(for: backupURL, report: report)
+            return (backupURL, report, logURL)
+        } catch {
+            let augmentedReport = BackupService.RestoreReport(
+                restoredPurchases: report.restoredPurchases,
+                issues: report.issues + ["Restore log could not be written: \(error.localizedDescription)"]
+            )
+            return (backupURL, augmentedReport, nil)
+        }
+    }
+
     static func resolvePurchaseNameConflicts(
         importedPurchases: [Purchase],
         existingPurchases: [Purchase]
