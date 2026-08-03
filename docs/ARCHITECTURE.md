@@ -139,6 +139,50 @@ unnecessary view-model layers.
 Reusable views should be placed in the relevant feature unless they are genuinely shared
 across several features.
 
+### Root-composition boundary (mandatory)
+
+`AppRootView` is a composition and wiring root. It may own high-level state and routing,
+but it must not become the implementation location for feature behavior.
+
+- `AppRootView` responsibilities:
+  - top-level section selection and composition
+  - passing bindings/actions to feature views
+  - delegating workflows to extracted coordinators/services
+- Feature responsibilities:
+  - list/detail/editor rendering
+  - feature-specific interaction handling
+  - feature-specific formatting and helpers
+
+`AppRootView` should delegate feature logic to focused collaborators (for example,
+selection/workflow/editor-sheet coordinators) rather than expanding inline.
+
+### Refactor trigger thresholds
+
+To prevent large later refactors, extraction is required when any one of the following is
+reached:
+
+- Swift file exceeds ~400 lines
+- single type exceeds ~12 stored properties for mixed concerns
+- function exceeds ~50 lines or handles multiple concerns
+- root-section switch logic grows without delegated feature composition
+
+These are guardrails, not style preferences. Crossing a threshold requires an immediate
+task-local extraction.
+
+### Dependency direction rules
+
+Feature dependencies must remain directional:
+
+- `Features -> Domain, Services, Persistence boundaries`
+- `Features` should not depend directly on other feature internals
+- shared feature UI goes in explicit shared section-view files
+- cross-feature behavior should be coordinated via root/coordinator or service boundaries
+
+### Navigation testability rule
+
+Primary navigation and row-selection surfaces must expose stable accessibility identifiers
+for UI tests. Labels alone are insufficient for long-term UI test stability.
+
 ---
 
 ## 6. Navigation
@@ -460,6 +504,8 @@ The operating instructions in that document are mandatory. In particular, Codex 
 1. Implement one clearly defined task or numbered phase at a time.
 2. Inspect only the documents and Swift files directly relevant to that task.
 3. Preserve this architecture and avoid unrelated refactoring.
+   - If thresholds in Section 5 are exceeded by the requested work, perform a scoped
+     extraction in the same task rather than deferring to a future cleanup.
 4. Explain the proposed implementation before editing.
 5. List the files it expects to create or modify.
 6. Stop after completing the requested phase.

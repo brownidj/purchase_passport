@@ -44,3 +44,39 @@ After implementation:
 3. Update `docs/CURRENT_STATE.md`.
 4. Commit and push to GitHub.
 5. Proceed to the next approved task.
+
+## UI Test Runbook
+
+Use the project script to run UI tests. It handles cleanup, stable artifact locations, progress heartbeat, and macOS metadata issues.
+
+Run targeted UI test:
+
+```zsh
+cd "Purchase Passport"
+./scripts/run_ui_tests.zsh single
+```
+
+Run all UI tests:
+
+```zsh
+cd "Purchase Passport"
+./scripts/run_ui_tests.zsh all-ui
+```
+
+Artifacts are written to:
+
+```text
+/private/tmp/PurchasePassport-test-artifacts
+```
+
+Tail newest run log:
+
+```zsh
+tail -f "$(ls -t /private/tmp/PurchasePassport-test-artifacts/Results/run-*.log | head -n 1)"
+```
+
+If a run fails:
+
+1. Copy the first `error:` line.
+2. Copy the first `XCTAssert` or `XCTFail` line.
+3. Copy the final `** TEST ... **` summary block.

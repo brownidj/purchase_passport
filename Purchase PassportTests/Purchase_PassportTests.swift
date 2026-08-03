@@ -7,6 +7,7 @@
 
 import Testing
 import Foundation
+import SwiftData
 @testable import Purchase_Passport
 
 struct Purchase_PassportTests {
@@ -172,6 +173,357 @@ struct Purchase_PassportTests {
         #expect(chronology.contains { $0.title == "Fault" })
         #expect(chronology.contains { $0.title == "Repair" })
         #expect(chronology.contains { $0.title == "Evidence Document" })
+    }
+
+    @Test func dashboardServiceReturnsOnlyUnresolvedFaults() {
+        let purchase = Purchase(name: "Fault Dashboard Test")
+        let openFault = FaultRecord(firstNoticedDate: .now, title: "Open Fault", status: .open, purchase: purchase)
+        let closedFault = FaultRecord(firstNoticedDate: .now, title: "Closed Fault", status: .closed, purchase: purchase)
+        let resolvedFault = FaultRecord(firstNoticedDate: .now, title: "Resolved Fault", status: .resolved, purchase: purchase)
+
+        let unresolved = DashboardService.unresolvedFaults(from: [openFault, closedFault, resolvedFault], limit: 10)
+
+        #expect(unresolved.count == 1)
+        #expect(unresolved.first?.title == "Open Fault")
+    }
+
+    @Test func dashboardServiceFlagsOnlyActiveComplaints() {
+        let active = ComplaintCase(title: "Open case", status: .open)
+        let escalated = ComplaintCase(title: "Escalated case", status: .escalated)
+        let resolved = ComplaintCase(title: "Resolved case", status: .resolved)
+
+        let result = DashboardService.activeComplaints(from: [active, escalated, resolved], limit: 10)
+
+        #expect(result.count == 2)
+        #expect(result.contains(where: { $0.title == "Open case" }))
+        #expect(result.contains(where: { $0.title == "Escalated case" }))
+    }
+
+    @Test func dashboardServiceFindsServiceDueWithinWindow() {
+        let calendar = Calendar(identifier: .gregorian)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))!
+        let inWindow = calendar.date(byAdding: .day, value: 10, to: referenceDate)!
+        let outWindow = calendar.date(byAdding: .day, value: 45, to: referenceDate)!
+
+        let dueSoon = ServiceRecord(serviceType: "Due soon", nextServiceDate: inWindow)
+        let dueLater = ServiceRecord(serviceType: "Due later", nextServiceDate: outWindow)
+
+        let result = DashboardService.serviceDueDates(
+            from: [dueSoon, dueLater],
+            asOf: referenceDate,
+            dueWithinDays: 30,
+            limit: 10
+        )
+
+        #expect(result.count == 1)
+        #expect(result.first?.serviceType == "Due soon")
+    }
+
+    @Test func appRootWorkflowAutoselectReturnsNilForEmptyItems() {
+        let selected = AppRootWorkflowCoordinator.autoselectID(
+            in: [Purchase](),
+            lastSelectedID: nil
+        )
+        #expect(selected == nil)
+    }
+
+    @Test func appRootWorkflowAutoselectPrefersLastSelectionWhenPresent() {
+        let first = Purchase(name: "First")
+        let second = Purchase(name: "Second")
+
+        let selected = AppRootWorkflowCoordinator.autoselectID(
+            in: [first, second],
+            lastSelectedID: second.persistentModelID
+        )
+
+        #expect(selected == second.persistentModelID)
+    }
+
+    @Test func appRootWorkflowAutoselectFallsBackToFirstWhenLastMissing() {
+        let first = Purchase(name: "First")
+        let second = Purchase(name: "Second")
+        let missing = Purchase(name: "Missing")
+
+        let selected = AppRootWorkflowCoordinator.autoselectID(
+            in: [first, second],
+            lastSelectedID: missing.persistentModelID
+        )
+
+        #expect(selected == first.persistentModelID)
+    }
+
+    @Test func appRootSelectionApplySectionChangeTriggersExpectedActions() {
+        var clearPurchaseAndDocumentCalls = 0
+        var autoselectPurchaseCalls = 0
+        var autoselectSearchCalls = 0
+        var autoselectServicingCalls = 0
+        var autoselectInteractionsCalls = 0
+        var autoselectComplaintsCalls = 0
+        var autoselectWarrantiesCalls = 0
+        var autoselectRemindersCalls = 0
+        var clearAllCalls = 0
+
+        AppRootSelectionCoordinator.applySectionChange(
+            .servicing,
+            clearPurchaseAndDocument: { clearPurchaseAndDocumentCalls += 1 },
+            autoselectPurchase: { autoselectPurchaseCalls += 1 },
+            autoselectSearch: { autoselectSearchCalls += 1 },
+            autoselectServicing: { autoselectServicingCalls += 1 },
+            autoselectInteractions: { autoselectInteractionsCalls += 1 },
+            autoselectComplaints: { autoselectComplaintsCalls += 1 },
+            autoselectWarranties: { autoselectWarrantiesCalls += 1 },
+            autoselectReminders: { autoselectRemindersCalls += 1 },
+            clearAll: { clearAllCalls += 1 }
+        )
+
+        #expect(clearPurchaseAndDocumentCalls == 1)
+        #expect(autoselectServicingCalls == 1)
+        #expect(autoselectPurchaseCalls == 0)
+        #expect(autoselectSearchCalls == 0)
+        #expect(autoselectInteractionsCalls == 0)
+        #expect(autoselectComplaintsCalls == 0)
+        #expect(autoselectWarrantiesCalls == 0)
+        #expect(autoselectRemindersCalls == 0)
+        #expect(clearAllCalls == 0)
+    }
+
+    @Test func appRootSelectionLinkedSelectionsChoosesSortedDefaults() {
+        let calendar = Calendar(identifier: .gregorian)
+        let purchase = Purchase(name: "Selection Test")
+
+        let oldDocument = StoredDocument(
+            title: "Old",
+            originalFilename: "old.pdf",
+            storedRelativePath: "seed/old.pdf",
+            dateAdded: calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))!,
+            purchase: purchase
+        )
+        let newDocument = StoredDocument(
+            title: "New",
+            originalFilename: "new.pdf",
+            storedRelativePath: "seed/new.pdf",
+            dateAdded: calendar.date(from: DateComponents(year: 2026, month: 8, day: 2))!,
+            purchase: purchase
+        )
+
+        let openReminder = Reminder(
+            title: "Later",
+            dueDate: calendar.date(from: DateComponents(year: 2026, month: 8, day: 10))!,
+            purchase: purchase
+        )
+        let soonerReminder = Reminder(
+            title: "Sooner",
+            dueDate: calendar.date(from: DateComponents(year: 2026, month: 8, day: 5))!,
+            purchase: purchase
+        )
+
+        let interactionEarlier = Interaction(
+            occurredAt: calendar.date(from: DateComponents(year: 2026, month: 8, day: 3))!,
+            type: .email,
+            subject: "Earlier",
+            purchase: purchase
+        )
+        let interactionLater = Interaction(
+            occurredAt: calendar.date(from: DateComponents(year: 2026, month: 8, day: 6))!,
+            type: .email,
+            subject: "Later",
+            purchase: purchase
+        )
+
+        purchase.documents = [oldDocument, newDocument]
+        purchase.reminders = [openReminder, soonerReminder]
+        purchase.interactions = [interactionEarlier, interactionLater]
+
+        let selections = AppRootSelectionCoordinator.linkedSelections(for: purchase)
+
+        #expect(selections.document?.title == "New")
+        #expect(selections.reminder?.title == "Sooner")
+        #expect(selections.interaction?.subject == "Later")
+    }
+
+    @Test func appRootWorkflowConvertsServiceToFaultUsingMappedFields() {
+        let purchase = Purchase(name: "Mapping Test")
+        let serviceDate = Calendar(identifier: .gregorian).date(
+            from: DateComponents(year: 2026, month: 9, day: 10)
+        )!
+        let service = ServiceRecord(
+            serviceType: "Inspection",
+            serviceDate: serviceDate,
+            workRequested: "Screen flicker during use",
+            workCompleted: "Checked ribbon cable",
+            technicianNotes: "Intermittent after prolonged use",
+            purchase: purchase
+        )
+
+        let fault = AppRootWorkflowCoordinator.convertServiceRecordToFault(service)
+
+        #expect(fault.title == "Inspection")
+        #expect(fault.firstNoticedDate == serviceDate)
+        #expect(fault.detailedDescription == "Screen flicker during use")
+        #expect(fault.diagnosticInformation == "Checked ribbon cable")
+        #expect(fault.effectOnUse == "Intermittent after prolonged use")
+        #expect(fault.severity == .medium)
+        #expect(fault.status == .open)
+    }
+
+    @Test func appRootWorkflowConvertsFaultToRepairUsingMappedFields() {
+        let purchase = Purchase(name: "Repair Mapping Test")
+        let fault = FaultRecord(
+            firstNoticedDate: .now,
+            title: "Trackpad issue",
+            detailedDescription: "Trackpad does not click intermittently",
+            status: .resolved,
+            effectOnUse: "Cannot reliably select items",
+            sellerOrManufacturerNotified: true,
+            purchase: purchase
+        )
+
+        let repair = AppRootWorkflowCoordinator.convertFaultToRepair(fault)
+
+        #expect(repair.diagnosis == "Trackpad issue")
+        #expect(repair.workPerformed == "Trackpad does not click intermittently")
+        #expect(repair.warrantyCoverage == true)
+        #expect(repair.paymentStatus == RepairPaymentStatus.unpaid)
+        #expect(repair.outcome == "Resolved")
+        #expect(repair.followUpRequired == false)
+        #expect(repair.unresolvedIssues == "Cannot reliably select items")
+    }
+
+    @Test func purchaseSearchServiceMatchesAcrossTagsAndDocuments() {
+        let workTag = Tag(name: "Work")
+        let purchase = Purchase(
+            name: "AcmeBook Pro 14",
+            seller: "Tech World",
+            tags: [workTag]
+        )
+        let receipt = StoredDocument(
+            title: "Tax Invoice",
+            originalFilename: "invoice.pdf",
+            storedRelativePath: "seed/invoice.pdf",
+            purchase: purchase
+        )
+        purchase.documents = [receipt]
+
+        let results = PurchaseSearchService.search(
+            purchases: [purchase],
+            query: "work invoice",
+            filters: .default,
+            sortOption: .mostRecent
+        )
+
+        #expect(results.count == 1)
+        #expect(results.first?.name == "AcmeBook Pro 14")
+    }
+
+    @Test func purchaseSearchServiceAppliesAdvancedFilters() {
+        let calendar = Calendar(identifier: .gregorian)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 8, day: 1))!
+        let upcomingReminderDate = calendar.date(byAdding: .day, value: 7, to: referenceDate)!
+
+        let electronicsCategory = PurchaseCategory(name: "Electronics")
+
+        let matching = Purchase(
+            name: "Laptop",
+            status: .active,
+            purchaseDate: referenceDate,
+            category: electronicsCategory
+        )
+        matching.reminders = [
+            Reminder(title: "Warranty follow-up", dueDate: upcomingReminderDate, purchase: matching)
+        ]
+        matching.complaintCases = [ComplaintCase(title: "Open case", status: .open, purchase: matching)]
+
+        let nonMatching = Purchase(
+            name: "Archived Phone",
+            status: .archived,
+            purchaseDate: referenceDate,
+            category: electronicsCategory
+        )
+
+        let filters = PurchaseSearchFilters(
+            categoryName: "Electronics",
+            status: .active,
+            upcomingReminderOnly: true,
+            activeComplaintOnly: true,
+            includeArchived: false
+        )
+
+        let results = PurchaseSearchService.search(
+            purchases: [matching, nonMatching],
+            query: "",
+            filters: filters,
+            sortOption: .mostRecent,
+            referenceDate: referenceDate
+        )
+
+        #expect(results.count == 1)
+        #expect(results.first?.name == "Laptop")
+    }
+
+    @Test func purchaseSearchServiceSavedSearchesRoundTrip() {
+        let saved = SavedPurchaseSearch(
+            name: "Warranty Focus",
+            query: "laptop",
+            filters: PurchaseSearchFilters(status: .active, warrantyFilter: .active),
+            sortOption: .warrantyExpirySoonest
+        )
+
+        let encoded = PurchaseSearchService.encodeSavedSearches([saved])
+        let decoded = PurchaseSearchService.decodeSavedSearches(from: encoded)
+
+        #expect(decoded.count == 1)
+        #expect(decoded.first?.name == "Warranty Focus")
+        #expect(decoded.first?.filters.status == .active)
+        #expect(decoded.first?.sortOption == .warrantyExpirySoonest)
+    }
+
+    @Test func purchaseExportServiceReportContainsKeySummaryFields() {
+        let purchase = Purchase(
+            name: "AcmeBook Pro 14",
+            status: .active,
+            purchasePrice: Decimal(string: "2999.99"),
+            currencyCode: "AUD",
+            seller: "Tech World",
+            manufacturer: "Acme"
+        )
+
+        let report = PurchaseExportService.purchaseReportText(for: purchase)
+        #expect(report.contains("Purchase Name: AcmeBook Pro 14"))
+        #expect(report.contains("Status: \(PurchaseStatus.active.rawValue)"))
+        #expect(report.contains("Purchase Price: AUD 2999.99"))
+    }
+
+    @Test func purchaseExportArchiveValidationPassesForFreshExport() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchase = Purchase(name: "Archive Test Purchase", status: .active)
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let archiveURL = tempRoot.appendingPathComponent("archive.pparchive", isDirectory: true)
+
+        try PurchaseExportService.exportArchive(for: purchase, to: archiveURL)
+        let issues = PurchaseExportService.validateArchive(at: archiveURL)
+
+        #expect(issues.isEmpty)
+    }
+
+    @Test func backupValidationPassesForFreshExport() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchases = [
+            Purchase(name: "Backup One", status: .active),
+            Purchase(name: "Backup Two", status: .ordered)
+        ]
+
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let backupURL = tempRoot.appendingPathComponent("backup.ppbackup", isDirectory: true)
+        try BackupService.exportBackup(for: purchases, to: backupURL)
+
+        let issues = BackupService.validateBackup(at: backupURL)
+        #expect(issues.isEmpty)
     }
 
 }

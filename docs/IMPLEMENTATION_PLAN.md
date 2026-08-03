@@ -22,7 +22,10 @@ Before implementing any phase, read:
 - Phase 7 (Task 007 – Interactions and Timeline): completed on August 2, 2026
 - Phase 8 (Task 008 – Servicing, Faults and Repairs): completed on August 2, 2026
 - Phase 9 (Task 009 – Complaints, Claims and Disputes): completed on August 2, 2026
-- Phase 10 onward: not started
+- Phase 10 (Task 010 – Dashboard): completed on August 2, 2026
+- Phase 11 (Task 011 – Search and Filtering): completed on August 3, 2026
+- Phase 12 (Task 012 – Export and Backup): in progress (foundation started on August 3, 2026)
+- Phase 13 onward: not started
 
 ## Phase 1 – Project Foundation
 
@@ -171,3 +174,25 @@ For every phase:
 5. Do not create Git commits.
 6. Recommend manual testing steps.
 7. Summarise all modified files.
+
+## Refactor Budget and Definition of Done
+
+To reduce future rework, each phase includes a small mandatory architecture-maintenance
+budget.
+
+### Refactor budget (in-scope only)
+
+- Task-local refactors that preserve documented architecture are allowed and expected.
+- Required extractions triggered by architecture/coding-standard thresholds should be done
+  in the same phase.
+- Broad unrelated rewrites remain out of scope.
+
+### Definition of done additions
+
+A phase is not complete unless all of the following are true:
+
+1. Requested behavior for that phase is implemented.
+2. Root composition files did not gain new unrelated feature logic.
+3. Any newly introduced complexity beyond thresholds was extracted.
+4. Relevant tests were added/updated (or explicitly deferred with rationale).
+5. `docs/CURRENT_STATE.md` reflects the latest status.

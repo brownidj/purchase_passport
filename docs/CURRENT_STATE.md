@@ -29,8 +29,11 @@ The project has completed:
 - Phase 7 (Task 007 – Interactions and Timeline) on August 2, 2026
 - Phase 8 (Task 008 – Servicing, Faults and Repairs) on August 2, 2026
 - Phase 9 (Task 009 – Complaints, Claims and Disputes) on August 2, 2026
+- Phase 10 (Task 010 – Dashboard) on August 2, 2026
+- Phase 11 (Task 011 – Search and Filtering) on August 3, 2026
+- Phase 12 (Task 012 – Export and Backup) started on August 3, 2026 (report export, archive export, backup export, portability validation foundation)
 
-The next implementation target is Phase 10 (Task 010 – Dashboard), unless the user explicitly requests a different phase.
+The next implementation target remains Phase 12 (Task 012 – Export and Backup), unless the user explicitly requests a different phase.
 
 At this stage, the source of truth is documentation:
 
@@ -152,4 +155,4 @@ git push
 
 ## 10. Next Expected Development Flow
 
-When implementation resumes, work should start with Phase 10 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.
+When implementation resumes, work should start with Phase 12 in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) unless the user explicitly requests a different phase.

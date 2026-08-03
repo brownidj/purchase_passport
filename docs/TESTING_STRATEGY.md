@@ -92,6 +92,40 @@ If tests are not run by the coding assistant, this must be stated explicitly in 
 - Avoid UI selectors that are likely to break from cosmetic layout changes.
 - Keep each test focused on one behavior.
 
+### 5.1 UI reliability baseline (mandatory)
+
+- UI tests must launch into a deterministic state when possible (for example, `-ui-testing`).
+- Prefer stable accessibility identifiers for navigation and list selection.
+- Avoid assumptions about macOS window restoration; verify or create required window state.
+- Keep UI assertions resilient to cosmetic layout differences.
+
+### 5.2 Standard UI test execution path
+
+Use the repository script for UI test runs:
+
+```zsh
+cd "Purchase Passport"
+./scripts/run_ui_tests.zsh single
+```
+
+Script expectations:
+
+- stable artifact/log locations
+- progress heartbeat during long runs
+- metadata cleanup for code-sign reliability
+- explicit result bundle and log paths at completion
+
+### 5.3 UI test failure triage checklist
+
+For failed runs, capture:
+
+1. first `error:` line
+2. first `XCTAssert`/`XCTFail` line
+3. final `** TEST ... **` summary block
+4. newest run log path and result bundle path
+
+Use attached debug artifacts (UI tree/screenshot) for selector or window-state diagnosis.
+
 ---
 
 ## 6. Manual Verification

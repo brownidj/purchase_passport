@@ -36,6 +36,25 @@ They apply to all production code and tests unless an exception is explicitly ap
 - Provide accessibility labels/hints for controls that are not self-explanatory.
 - Avoid long-running work on the main actor; use async tasks and cancellation where appropriate.
 
+### 3.1 View complexity limits
+
+To avoid large refactors later, apply these limits proactively:
+
+- Prefer extraction when a SwiftUI file exceeds ~400 lines.
+- Prefer extraction when a single view accumulates many unrelated `@State` properties.
+- Split long `body` compositions into focused computed subviews/section views.
+- Extract workflow/selection/sheet coordination out of large root views.
+
+Large views should be decomposed during the task that introduces the complexity, not
+deferred to a separate cleanup phase.
+
+### 3.2 UI testability by design
+
+- Add stable accessibility identifiers for primary navigation, list rows, and key actions.
+- Keep launch-argument-driven test modes deterministic (for example, `-ui-testing`).
+- Do not rely on restored window state for UI test pass conditions.
+- Where practical, ensure test launch can reach a known section without brittle UI clicks.
+
 ---
 
 ## 4. SwiftData Standards
@@ -83,6 +102,13 @@ They apply to all production code and tests unless an exception is explicitly ap
 - Keep tests deterministic and isolated.
 - Use clear naming that describes the behavior under test.
 - Follow [TESTING_STRATEGY.md](TESTING_STRATEGY.md) for test-layer selection.
+
+### 7.1 macOS UI test runtime standards
+
+- Run UI tests through the repository script (`scripts/run_ui_tests.zsh`).
+- Keep test artifacts outside source roots to prevent build graph pollution.
+- If code-sign metadata issues occur, apply xattr cleanup and rerun via script rather than
+  modifying project targets ad hoc.
 
 ---
 

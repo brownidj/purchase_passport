@@ -8,36 +8,71 @@
 import XCTest
 
 final class Purchase_PassportUITests: XCTestCase {
+    private var app: XCUIApplication!
+
+    private func attachDebugArtifacts(_ name: String) {
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = "\(name)-ui-tree"
+        tree.lifetime = .keepAlways
+        add(tree)
+
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "\(name)-screenshot"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
+    private func debugState(_ label: String) {
+        print("[UITEST] \(label)")
+        print("[UITEST] app.state=\(app.state.rawValue)")
+        print("[UITEST] app.windows.count=\(app.windows.count)")
+    }
+
+    private func ensureWindowExists(timeout: TimeInterval = 10) -> Bool {
+        if app.windows.firstMatch.waitForExistence(timeout: timeout) {
+            return true
+        }
+
+        // Recovery for macOS state-restore cases where app launches foreground with no window.
+        app.typeKey("n", modifierFlags: .command)
+        return app.windows.firstMatch.waitForExistence(timeout: 5)
+    }
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ApplePersistenceIgnoreState", "YES"]
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        app = nil
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+    func testCanOpenAllPurchasesAndSeeSeededPurchase() throws {
         app.launch()
+        debugState("after launch")
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
-    }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+        let isForeground = app.wait(for: .runningForeground, timeout: 10)
+        if !isForeground {
+            attachDebugArtifacts("not-foreground")
         }
+        XCTAssertTrue(isForeground, "App failed to reach runningForeground state")
+
+        let hasWindow = ensureWindowExists()
+        if !hasWindow {
+            debugState("no-window")
+            attachDebugArtifacts("no-window")
+        }
+        XCTAssertTrue(hasWindow, "App did not present a window")
+
+        let seededPurchaseRow = app.descendants(matching: .any)["purchaseRow.AcmeBook Pro 14"].firstMatch
+        let rowExists = seededPurchaseRow.waitForExistence(timeout: 10)
+        if !rowExists {
+            debugState("seeded row missing")
+            attachDebugArtifacts("seeded-row-missing")
+        }
+        XCTAssertTrue(rowExists, "Seeded purchase row not found: purchaseRow.AcmeBook Pro 14")
     }
+
 }
