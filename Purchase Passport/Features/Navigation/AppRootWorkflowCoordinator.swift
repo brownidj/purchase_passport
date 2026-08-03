@@ -173,6 +173,17 @@ struct AppRootWorkflowCoordinator {
         return destinationURL
     }
 
+    static func exportPurchasePDFReport(_ purchase: Purchase) throws -> URL {
+        let defaultFileName = "\(purchase.name)-report.pdf"
+        let destinationURL = try saveURL(
+            title: "Export Purchase PDF Report",
+            defaultFileName: defaultFileName,
+            allowedContentTypes: [.pdf]
+        )
+        try PurchaseExportService.exportPDFReport(for: purchase, to: destinationURL)
+        return destinationURL
+    }
+
     static func exportPurchaseArchive(_ purchase: Purchase) throws -> URL {
         let defaultFolderName = "\(purchase.name).pparchive"
         let destinationURL = try saveURL(

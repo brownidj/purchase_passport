@@ -53,6 +53,7 @@ struct PurchaseDetailSectionView: View {
     let onEditRepair: () -> Void
     let onOpenDocument: () -> Void
     let onExportReport: () -> Void
+    let onExportPDFReport: () -> Void
     let onExportArchive: () -> Void
 
     var body: some View {
@@ -394,6 +395,7 @@ struct PurchaseDetailSectionView: View {
                             .disabled(selectedDocument == nil)
 
                         Button("Export Report", action: onExportReport)
+                        Button("Export PDF Report", action: onExportPDFReport)
                         Button("Export Archive", action: onExportArchive)
                     }
                 }

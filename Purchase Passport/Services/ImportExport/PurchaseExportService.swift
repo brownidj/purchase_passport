@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 struct PurchaseExportService {
     struct AttachmentManifestEntry: Codable, Equatable {
@@ -88,6 +89,22 @@ struct PurchaseExportService {
             throw ExportError.invalidDestination
         }
         try purchaseReportText(for: purchase).write(to: destinationURL, atomically: true, encoding: .utf8)
+    }
+
+    static func exportPDFReport(for purchase: Purchase, to destinationURL: URL) throws {
+        guard destinationURL.isFileURL else {
+            throw ExportError.invalidDestination
+        }
+
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 595, height: 842))
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.textContainerInset = NSSize(width: 36, height: 36)
+        textView.string = purchaseReportText(for: purchase)
+        textView.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+
+        let data = textView.dataWithPDF(inside: textView.bounds)
+        try data.write(to: destinationURL, options: .atomic)
     }
 
     @discardableResult

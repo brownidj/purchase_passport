@@ -703,6 +703,7 @@ struct AppRootView: View {
             },
             onOpenDocument: openSelectedDocument,
             onExportReport: exportSelectedPurchaseReport,
+            onExportPDFReport: exportSelectedPurchasePDFReport,
             onExportArchive: exportSelectedPurchaseArchive
         )
     }
@@ -1118,6 +1119,23 @@ struct AppRootView: View {
         do {
             let url = try AppRootWorkflowCoordinator.exportPurchaseReport(selectedPurchase)
             operationAlertTitle = "Report Exported"
+            operationAlertMessage = "Saved to \(url.path)"
+        } catch {
+            if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
+               workflowError == .cancelled {
+                return
+            }
+            operationAlertTitle = "Export Error"
+            operationAlertMessage = error.localizedDescription
+        }
+    }
+
+    private func exportSelectedPurchasePDFReport() {
+        guard let selectedPurchase else { return }
+
+        do {
+            let url = try AppRootWorkflowCoordinator.exportPurchasePDFReport(selectedPurchase)
+            operationAlertTitle = "PDF Report Exported"
             operationAlertMessage = "Saved to \(url.path)"
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,

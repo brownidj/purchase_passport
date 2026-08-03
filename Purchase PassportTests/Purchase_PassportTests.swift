@@ -508,6 +508,23 @@ struct Purchase_PassportTests {
         #expect(issues.isEmpty)
     }
 
+    @Test func purchaseExportPDFReportWritesNonEmptyFile() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchase = Purchase(name: "PDF Test Purchase", status: .active)
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let destinationURL = tempRoot.appendingPathComponent("purchase-report.pdf")
+
+        try PurchaseExportService.exportPDFReport(for: purchase, to: destinationURL)
+        #expect(fileManager.fileExists(atPath: destinationURL.path))
+
+        let attributes = try fileManager.attributesOfItem(atPath: destinationURL.path)
+        let size = attributes[.size] as? NSNumber
+        #expect((size?.intValue ?? 0) > 0)
+    }
+
     @Test func backupValidationPassesForFreshExport() throws {
         let fileManager = FileManager.default
         let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
