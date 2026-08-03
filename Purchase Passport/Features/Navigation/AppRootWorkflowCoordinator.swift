@@ -8,6 +8,11 @@ struct AppRootWorkflowCoordinator {
         let resolvedName: String
     }
 
+    struct DocumentIdentifierConflictResolution: Equatable {
+        let originalIdentifier: UUID
+        let resolvedIdentifier: UUID
+    }
+
     enum ExportWorkflowError: LocalizedError, Equatable {
         case cancelled
 
@@ -254,6 +259,45 @@ struct AppRootWorkflowCoordinator {
                     PurchaseNameConflictResolution(
                         originalName: originalName,
                         resolvedName: candidateName
+                    )
+                )
+            }
+        }
+
+        return resolutions
+    }
+
+    static func resolveDocumentIdentifierConflicts(
+        importedPurchases: [Purchase],
+        existingPurchases: [Purchase]
+    ) -> [DocumentIdentifierConflictResolution] {
+        var usedIdentifiers = Set<UUID>()
+        for purchase in existingPurchases {
+            for document in purchase.documents {
+                usedIdentifiers.insert(document.identifier)
+            }
+        }
+
+        var resolutions: [DocumentIdentifierConflictResolution] = []
+        for purchase in importedPurchases {
+            for document in purchase.documents {
+                let originalIdentifier = document.identifier
+                if !usedIdentifiers.contains(originalIdentifier) {
+                    usedIdentifiers.insert(originalIdentifier)
+                    continue
+                }
+
+                var newIdentifier = UUID()
+                while usedIdentifiers.contains(newIdentifier) {
+                    newIdentifier = UUID()
+                }
+
+                document.identifier = newIdentifier
+                usedIdentifiers.insert(newIdentifier)
+                resolutions.append(
+                    DocumentIdentifierConflictResolution(
+                        originalIdentifier: originalIdentifier,
+                        resolvedIdentifier: newIdentifier
                     )
                 )
             }

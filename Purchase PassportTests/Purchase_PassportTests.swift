@@ -813,6 +813,40 @@ struct Purchase_PassportTests {
         #expect(issues.contains(where: { $0.contains("Invalid archive path in backup manifest") }))
     }
 
+    @Test func appRootWorkflowResolveDocumentIdentifierConflictsReassignsDuplicates() {
+        let duplicateIdentifier = UUID()
+
+        let existingPurchase = Purchase(name: "Existing")
+        let existingDocument = StoredDocument(
+            identifier: duplicateIdentifier,
+            title: "Existing Receipt",
+            originalFilename: "existing.pdf",
+            storedRelativePath: "existing.pdf",
+            purchase: existingPurchase
+        )
+        existingPurchase.documents = [existingDocument]
+
+        let importedPurchase = Purchase(name: "Imported")
+        let importedDocument = StoredDocument(
+            identifier: duplicateIdentifier,
+            title: "Imported Receipt",
+            originalFilename: "imported.pdf",
+            storedRelativePath: "imported.pdf",
+            purchase: importedPurchase
+        )
+        importedPurchase.documents = [importedDocument]
+
+        let resolutions = AppRootWorkflowCoordinator.resolveDocumentIdentifierConflicts(
+            importedPurchases: [importedPurchase],
+            existingPurchases: [existingPurchase]
+        )
+
+        #expect(resolutions.count == 1)
+        #expect(resolutions.first?.originalIdentifier == duplicateIdentifier)
+        #expect(importedDocument.identifier != duplicateIdentifier)
+        #expect(importedDocument.identifier == resolutions.first?.resolvedIdentifier)
+    }
+
     @Test func purchaseArchiveValidationReportsChecksumMismatchAfterTamper() throws {
         let fileManager = FileManager.default
         let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)

@@ -1204,6 +1204,10 @@ struct AppRootView: View {
                 importedPurchases: [importedPurchase],
                 existingPurchases: purchases
             )
+            let documentIdentifierResolutions = AppRootWorkflowCoordinator.resolveDocumentIdentifierConflicts(
+                importedPurchases: [importedPurchase],
+                existingPurchases: purchases
+            )
             modelContext.insert(importedPurchase)
             try modelContext.save()
             selectedSection = .allPurchases
@@ -1213,6 +1217,10 @@ struct AppRootView: View {
                 operationAlertMessage = "Imported purchase: \(importedPurchase.name)"
             } else {
                 operationAlertMessage = "Imported purchase: \(importedPurchase.name)\n\nName adjusted to avoid a duplicate."
+            }
+            if !documentIdentifierResolutions.isEmpty {
+                operationAlertMessage = (operationAlertMessage ?? "")
+                    + "\n\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
@@ -1231,6 +1239,10 @@ struct AppRootView: View {
                 importedPurchases: restoredPurchases,
                 existingPurchases: purchases
             )
+            let documentIdentifierResolutions = AppRootWorkflowCoordinator.resolveDocumentIdentifierConflicts(
+                importedPurchases: restoredPurchases,
+                existingPurchases: purchases
+            )
             for purchase in restoredPurchases {
                 modelContext.insert(purchase)
             }
@@ -1244,6 +1256,10 @@ struct AppRootView: View {
                 operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s)."
             } else {
                 operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s).\nRenamed \(renames.count) purchase(s) to avoid duplicates."
+            }
+            if !documentIdentifierResolutions.isEmpty {
+                operationAlertMessage = (operationAlertMessage ?? "")
+                    + "\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
