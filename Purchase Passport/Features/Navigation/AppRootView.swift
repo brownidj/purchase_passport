@@ -520,6 +520,14 @@ struct AppRootView: View {
                 Button("Restore Backup") {
                     restoreFullBackup()
                 }
+
+                Button("Validate Archive") {
+                    validatePurchaseArchive()
+                }
+
+                Button("Validate Backup") {
+                    validateFullBackup()
+                }
             }
         }
     }
@@ -1243,6 +1251,46 @@ struct AppRootView: View {
                 return
             }
             operationAlertTitle = "Restore Error"
+            operationAlertMessage = error.localizedDescription
+        }
+    }
+
+    private func validatePurchaseArchive() {
+        do {
+            let result = try AppRootWorkflowCoordinator.validateSelectedPurchaseArchive()
+            if result.issues.isEmpty {
+                operationAlertTitle = "Archive Validation Passed"
+                operationAlertMessage = "No validation issues found.\n\n\(result.url.path)"
+            } else {
+                operationAlertTitle = "Archive Validation Issues"
+                operationAlertMessage = "Found \(result.issues.count) issue(s).\n\n\(result.issues.joined(separator: "\n"))"
+            }
+        } catch {
+            if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
+               workflowError == .cancelled {
+                return
+            }
+            operationAlertTitle = "Validation Error"
+            operationAlertMessage = error.localizedDescription
+        }
+    }
+
+    private func validateFullBackup() {
+        do {
+            let result = try AppRootWorkflowCoordinator.validateSelectedBackup()
+            if result.issues.isEmpty {
+                operationAlertTitle = "Backup Validation Passed"
+                operationAlertMessage = "No validation issues found.\n\n\(result.url.path)"
+            } else {
+                operationAlertTitle = "Backup Validation Issues"
+                operationAlertMessage = "Found \(result.issues.count) issue(s).\n\n\(result.issues.joined(separator: "\n"))"
+            }
+        } catch {
+            if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
+               workflowError == .cancelled {
+                return
+            }
+            operationAlertTitle = "Validation Error"
             operationAlertMessage = error.localizedDescription
         }
     }

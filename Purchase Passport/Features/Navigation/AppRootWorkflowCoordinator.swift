@@ -270,6 +270,22 @@ struct AppRootWorkflowCoordinator {
         BackupService.validateBackup(at: backupURL)
     }
 
+    static func validateSelectedPurchaseArchive() throws -> (url: URL, issues: [String]) {
+        let archiveURL = try openDirectoryURL(
+            title: "Validate Purchase Archive",
+            allowedContentTypes: [UTType(filenameExtension: "pparchive")].compactMap { $0 }
+        )
+        return (archiveURL, PurchaseExportService.validateArchive(at: archiveURL))
+    }
+
+    static func validateSelectedBackup() throws -> (url: URL, issues: [String]) {
+        let backupURL = try openDirectoryURL(
+            title: "Validate Full Backup",
+            allowedContentTypes: [UTType(filenameExtension: "ppbackup")].compactMap { $0 }
+        )
+        return (backupURL, BackupService.validateBackup(at: backupURL))
+    }
+
     private static func saveURL(
         title: String,
         defaultFileName: String,

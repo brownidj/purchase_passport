@@ -765,4 +765,52 @@ struct Purchase_PassportTests {
         }
     }
 
+    @Test func purchaseArchiveValidationReportsInvalidPurchaseStatusIssue() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let archiveURL = tempRoot.appendingPathComponent("invalid-status-validation.pparchive", isDirectory: true)
+        try fileManager.createDirectory(at: archiveURL, withIntermediateDirectories: true)
+        try fileManager.createDirectory(
+            at: archiveURL.appendingPathComponent("attachments", isDirectory: true),
+            withIntermediateDirectories: true
+        )
+
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "exportedAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseName": "Validation Purchase",
+            "purchaseStatus": "broken-status",
+            "attachmentCount": 0,
+            "attachments": []
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: archiveURL.appendingPathComponent("manifest.json"), options: .atomic)
+
+        let issues = PurchaseExportService.validateArchive(at: archiveURL)
+        #expect(issues.contains(where: { $0.contains("Purchase status is invalid") }))
+    }
+
+    @Test func backupValidationReportsInvalidArchivePathIssue() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let backupURL = tempRoot.appendingPathComponent("invalid-path-validation.ppbackup", isDirectory: true)
+        try fileManager.createDirectory(at: backupURL, withIntermediateDirectories: true)
+
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "createdAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseCount": 1,
+            "purchaseArchives": ["../bad.pparchive"]
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: backupURL.appendingPathComponent("backup-manifest.json"), options: .atomic)
+
+        let issues = BackupService.validateBackup(at: backupURL)
+        #expect(issues.contains(where: { $0.contains("Invalid archive path in backup manifest") }))
+    }
+
 }
