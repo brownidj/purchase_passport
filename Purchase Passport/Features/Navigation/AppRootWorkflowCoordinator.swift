@@ -3,6 +3,11 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct AppRootWorkflowCoordinator {
+    struct PurchaseNameConflictResolution: Equatable {
+        let originalName: String
+        let resolvedName: String
+    }
+
     enum ExportWorkflowError: LocalizedError, Equatable {
         case cancelled
 
@@ -223,6 +228,40 @@ struct AppRootWorkflowCoordinator {
         return try BackupService.restoreBackup(at: backupURL)
     }
 
+    static func resolvePurchaseNameConflicts(
+        importedPurchases: [Purchase],
+        existingPurchases: [Purchase]
+    ) -> [PurchaseNameConflictResolution] {
+        var usedNames = Set(existingPurchases.map { normalizedName($0.name) })
+        var resolutions: [PurchaseNameConflictResolution] = []
+
+        for purchase in importedPurchases {
+            let originalName = purchase.name
+            let trimmed = originalName.trimmingCharacters(in: .whitespacesAndNewlines)
+            let baseName = trimmed.isEmpty ? "Imported Purchase" : trimmed
+            var candidateName = baseName
+            var suffix = 2
+
+            while usedNames.contains(normalizedName(candidateName)) {
+                candidateName = "\(baseName) (Imported \(suffix))"
+                suffix += 1
+            }
+
+            purchase.name = candidateName
+            usedNames.insert(normalizedName(candidateName))
+            if candidateName != originalName {
+                resolutions.append(
+                    PurchaseNameConflictResolution(
+                        originalName: originalName,
+                        resolvedName: candidateName
+                    )
+                )
+            }
+        }
+
+        return resolutions
+    }
+
     static func validatePurchaseArchive(at archiveURL: URL) -> [String] {
         PurchaseExportService.validateArchive(at: archiveURL)
     }
@@ -270,5 +309,9 @@ struct AppRootWorkflowCoordinator {
             throw ExportWorkflowError.cancelled
         }
         return url
+    }
+
+    private static func normalizedName(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 }

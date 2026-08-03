@@ -636,4 +636,133 @@ struct Purchase_PassportTests {
         #expect(restored.contains(where: { $0.name == "Restore Two" }))
     }
 
+    @Test func purchaseArchiveImportRejectsUnsafeAttachmentPath() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let archiveURL = tempRoot.appendingPathComponent("unsafe.pparchive", isDirectory: true)
+        try fileManager.createDirectory(at: archiveURL, withIntermediateDirectories: true)
+        let attachmentsURL = archiveURL.appendingPathComponent("attachments", isDirectory: true)
+        try fileManager.createDirectory(at: attachmentsURL, withIntermediateDirectories: true)
+
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "exportedAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseName": "Unsafe Import",
+            "purchaseStatus": PurchaseStatus.active.rawValue,
+            "attachmentCount": 1,
+            "attachments": [
+                [
+                    "documentIdentifier": UUID().uuidString,
+                    "title": "Unsafe",
+                    "category": DocumentCategory.receipt.rawValue,
+                    "originalFilename": "receipt.pdf",
+                    "archivedRelativePath": "../escape.pdf"
+                ]
+            ]
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: archiveURL.appendingPathComponent("manifest.json"), options: .atomic)
+
+        do {
+            _ = try PurchaseExportService.importArchive(at: archiveURL)
+            Issue.record("Expected invalid attachment path error.")
+        } catch let error as PurchaseExportService.ExportError {
+            switch error {
+            case .invalidAttachmentPath(let path):
+                #expect(path == "../escape.pdf")
+            default:
+                Issue.record("Unexpected export error: \(error.localizedDescription)")
+            }
+        } catch {
+            Issue.record("Unexpected error type: \(error.localizedDescription)")
+        }
+    }
+
+    @Test func appRootWorkflowResolvePurchaseNameConflictsRenamesDuplicates() {
+        let existingPurchases = [Purchase(name: "MacBook"), Purchase(name: "iPhone")]
+        let importedPurchases = [Purchase(name: "MacBook"), Purchase(name: "MacBook"), Purchase(name: "Watch")]
+
+        let resolutions = AppRootWorkflowCoordinator.resolvePurchaseNameConflicts(
+            importedPurchases: importedPurchases,
+            existingPurchases: existingPurchases
+        )
+
+        #expect(importedPurchases[0].name == "MacBook (Imported 2)")
+        #expect(importedPurchases[1].name == "MacBook (Imported 3)")
+        #expect(importedPurchases[2].name == "Watch")
+        #expect(resolutions.count == 2)
+    }
+
+    @Test func purchaseArchiveImportRejectsInvalidPurchaseStatus() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let archiveURL = tempRoot.appendingPathComponent("invalid-status.pparchive", isDirectory: true)
+        try fileManager.createDirectory(at: archiveURL, withIntermediateDirectories: true)
+        try fileManager.createDirectory(
+            at: archiveURL.appendingPathComponent("attachments", isDirectory: true),
+            withIntermediateDirectories: true
+        )
+
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "exportedAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseName": "Invalid Status Purchase",
+            "purchaseStatus": "not-a-real-status",
+            "attachmentCount": 0,
+            "attachments": []
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: archiveURL.appendingPathComponent("manifest.json"), options: .atomic)
+
+        do {
+            _ = try PurchaseExportService.importArchive(at: archiveURL)
+            Issue.record("Expected invalid purchase status error.")
+        } catch let error as PurchaseExportService.ExportError {
+            switch error {
+            case .invalidPurchaseStatus(let value):
+                #expect(value == "not-a-real-status")
+            default:
+                Issue.record("Unexpected export error: \(error.localizedDescription)")
+            }
+        } catch {
+            Issue.record("Unexpected error type: \(error.localizedDescription)")
+        }
+    }
+
+    @Test func backupRestoreRejectsInvalidArchivePathInManifest() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let backupURL = tempRoot.appendingPathComponent("invalid-path.ppbackup", isDirectory: true)
+        try fileManager.createDirectory(at: backupURL, withIntermediateDirectories: true)
+
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "createdAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseCount": 1,
+            "purchaseArchives": ["../outside.pparchive"]
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: backupURL.appendingPathComponent("backup-manifest.json"), options: .atomic)
+
+        do {
+            _ = try BackupService.restoreBackup(at: backupURL)
+            Issue.record("Expected invalid archive path error.")
+        } catch let error as BackupService.BackupError {
+            switch error {
+            case .invalidArchivePath(let value):
+                #expect(value == "../outside.pparchive")
+            default:
+                Issue.record("Unexpected backup error: \(error.localizedDescription)")
+            }
+        } catch {
+            Issue.record("Unexpected error type: \(error.localizedDescription)")
+        }
+    }
+
 }

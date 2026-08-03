@@ -31,6 +31,13 @@ struct PurchaseExportService {
         case unsupportedSchemaVersion(Int)
         case invalidManifest
         case missingAttachment(String)
+        case invalidAttachmentPath(String)
+        case emptyPurchaseName
+        case invalidPurchaseStatus(String)
+        case invalidPurchaseDate(String)
+        case invalidPurchasePrice(String)
+        case duplicateAttachmentIdentifier(UUID)
+        case duplicateAttachmentPath(String)
 
         var errorDescription: String? {
             switch self {
@@ -46,6 +53,20 @@ struct PurchaseExportService {
                 return "The archive manifest is invalid."
             case .missingAttachment(let path):
                 return "The archive attachment is missing: \(path)"
+            case .invalidAttachmentPath(let path):
+                return "The archive contains an invalid attachment path: \(path)"
+            case .emptyPurchaseName:
+                return "The archive purchase name is empty."
+            case .invalidPurchaseStatus(let value):
+                return "The archive contains an invalid purchase status: \(value)"
+            case .invalidPurchaseDate(let value):
+                return "The archive contains an invalid purchase date: \(value)"
+            case .invalidPurchasePrice(let value):
+                return "The archive contains an invalid purchase price: \(value)"
+            case .duplicateAttachmentIdentifier(let identifier):
+                return "The archive contains duplicate attachment identifiers: \(identifier.uuidString)"
+            case .duplicateAttachmentPath(let value):
+                return "The archive contains duplicate attachment paths: \(value)"
             }
         }
     }
@@ -207,7 +228,38 @@ struct PurchaseExportService {
                 issues.append("Attachment count mismatch in manifest.")
             }
 
+            if manifest.purchaseName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                issues.append("Purchase name is empty.")
+            }
+
+            if PurchaseStatus(rawValue: manifest.purchaseStatus) == nil {
+                issues.append("Purchase status is invalid: \(manifest.purchaseStatus)")
+            }
+
+            if let purchaseDateISO8601 = manifest.purchaseDateISO8601,
+               parseISO8601Date(purchaseDateISO8601) == nil {
+                issues.append("Purchase date is invalid: \(purchaseDateISO8601)")
+            }
+
+            if let purchasePrice = manifest.purchasePrice,
+               parseDecimal(purchasePrice) == nil {
+                issues.append("Purchase price is invalid: \(purchasePrice)")
+            }
+
+            var seenAttachmentIdentifiers = Set<UUID>()
+            var seenAttachmentPaths = Set<String>()
+
             for attachment in manifest.attachments {
+                if !seenAttachmentIdentifiers.insert(attachment.documentIdentifier).inserted {
+                    issues.append("Duplicate attachment identifier: \(attachment.documentIdentifier.uuidString)")
+                }
+                if !seenAttachmentPaths.insert(attachment.archivedRelativePath).inserted {
+                    issues.append("Duplicate attachment path: \(attachment.archivedRelativePath)")
+                }
+                if !isSafeAttachmentRelativePath(attachment.archivedRelativePath) {
+                    issues.append("Invalid attachment path: \(attachment.archivedRelativePath)")
+                    continue
+                }
                 let attachmentURL = archiveURL.appendingPathComponent(attachment.archivedRelativePath)
                 if !fileManager.fileExists(atPath: attachmentURL.path) {
                     issues.append("Missing attachment file: \(attachment.archivedRelativePath)")
@@ -245,9 +297,7 @@ struct PurchaseExportService {
             throw ExportError.unsupportedSchemaVersion(manifest.schemaVersion)
         }
 
-        guard manifest.attachmentCount == manifest.attachments.count else {
-            throw ExportError.invalidManifest
-        }
+        try validateManifestForImport(manifest)
 
         let purchase = Purchase(
             name: manifest.purchaseName,
@@ -260,6 +310,9 @@ struct PurchaseExportService {
         )
 
         for attachment in manifest.attachments {
+            guard isSafeAttachmentRelativePath(attachment.archivedRelativePath) else {
+                throw ExportError.invalidAttachmentPath(attachment.archivedRelativePath)
+            }
             let sourceURL = archiveURL.appendingPathComponent(attachment.archivedRelativePath)
             guard fileManager.fileExists(atPath: sourceURL.path) else {
                 throw ExportError.missingAttachment(attachment.archivedRelativePath)
@@ -309,5 +362,53 @@ struct PurchaseExportService {
         let invalid = CharacterSet(charactersIn: "/:\\?%*|\"<>")
         let cleaned = value.components(separatedBy: invalid).joined(separator: "_")
         return cleaned.isEmpty ? "attachment" : cleaned
+    }
+
+    private static func isSafeAttachmentRelativePath(_ value: String) -> Bool {
+        guard value.hasPrefix("\(attachmentsFolderName)/"), !value.contains("..") else {
+            return false
+        }
+        let path = NSString(string: value)
+        return !path.isAbsolutePath
+    }
+
+    private static func validateManifestForImport(_ manifest: PurchaseArchiveManifest) throws {
+        guard manifest.attachmentCount == manifest.attachments.count else {
+            throw ExportError.invalidManifest
+        }
+
+        guard !manifest.purchaseName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw ExportError.emptyPurchaseName
+        }
+
+        guard PurchaseStatus(rawValue: manifest.purchaseStatus) != nil else {
+            throw ExportError.invalidPurchaseStatus(manifest.purchaseStatus)
+        }
+
+        if let purchaseDateISO8601 = manifest.purchaseDateISO8601,
+           parseISO8601Date(purchaseDateISO8601) == nil {
+            throw ExportError.invalidPurchaseDate(purchaseDateISO8601)
+        }
+
+        if let purchasePrice = manifest.purchasePrice,
+           parseDecimal(purchasePrice) == nil {
+            throw ExportError.invalidPurchasePrice(purchasePrice)
+        }
+
+        var seenAttachmentIdentifiers = Set<UUID>()
+        var seenAttachmentPaths = Set<String>()
+        for attachment in manifest.attachments {
+            guard seenAttachmentIdentifiers.insert(attachment.documentIdentifier).inserted else {
+                throw ExportError.duplicateAttachmentIdentifier(attachment.documentIdentifier)
+            }
+
+            guard seenAttachmentPaths.insert(attachment.archivedRelativePath).inserted else {
+                throw ExportError.duplicateAttachmentPath(attachment.archivedRelativePath)
+            }
+
+            guard isSafeAttachmentRelativePath(attachment.archivedRelativePath) else {
+                throw ExportError.invalidAttachmentPath(attachment.archivedRelativePath)
+            }
+        }
     }
 }

@@ -1192,12 +1192,20 @@ struct AppRootView: View {
     private func importPurchaseArchive() {
         do {
             let importedPurchase = try AppRootWorkflowCoordinator.importPurchaseArchive()
+            let renames = AppRootWorkflowCoordinator.resolvePurchaseNameConflicts(
+                importedPurchases: [importedPurchase],
+                existingPurchases: purchases
+            )
             modelContext.insert(importedPurchase)
             try modelContext.save()
             selectedSection = .allPurchases
             selectedPurchase = importedPurchase
             operationAlertTitle = "Archive Imported"
-            operationAlertMessage = "Imported purchase: \(importedPurchase.name)"
+            if renames.isEmpty {
+                operationAlertMessage = "Imported purchase: \(importedPurchase.name)"
+            } else {
+                operationAlertMessage = "Imported purchase: \(importedPurchase.name)\n\nName adjusted to avoid a duplicate."
+            }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
@@ -1211,6 +1219,10 @@ struct AppRootView: View {
     private func restoreFullBackup() {
         do {
             let restoredPurchases = try AppRootWorkflowCoordinator.restoreFullBackup()
+            let renames = AppRootWorkflowCoordinator.resolvePurchaseNameConflicts(
+                importedPurchases: restoredPurchases,
+                existingPurchases: purchases
+            )
             for purchase in restoredPurchases {
                 modelContext.insert(purchase)
             }
@@ -1220,7 +1232,11 @@ struct AppRootView: View {
                 selectedPurchase = firstPurchase
             }
             operationAlertTitle = "Backup Restored"
-            operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s)."
+            if renames.isEmpty {
+                operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s)."
+            } else {
+                operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s).\nRenamed \(renames.count) purchase(s) to avoid duplicates."
+            }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {

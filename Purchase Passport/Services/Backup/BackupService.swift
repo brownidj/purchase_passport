@@ -14,6 +14,9 @@ struct BackupService {
         case manifestMissing
         case unsupportedSchemaVersion(Int)
         case invalidManifest
+        case invalidArchivePath(String)
+        case duplicateArchivePath(String)
+        case invalidArchive(String, String)
 
         var errorDescription: String? {
             switch self {
@@ -27,6 +30,12 @@ struct BackupService {
                 return "The backup schema version \(version) is not supported."
             case .invalidManifest:
                 return "The backup manifest is invalid."
+            case .invalidArchivePath(let path):
+                return "The backup contains an invalid archive path: \(path)"
+            case .duplicateArchivePath(let path):
+                return "The backup contains a duplicate archive path: \(path)"
+            case .invalidArchive(let path, let issue):
+                return "The archive at \(path) is invalid: \(issue)"
             }
         }
     }
@@ -104,7 +113,16 @@ struct BackupService {
                 issues.append("Purchase count mismatch in backup manifest.")
             }
 
+            var seenArchivePaths = Set<String>()
             for relativePath in manifest.purchaseArchives {
+                if !seenArchivePaths.insert(relativePath).inserted {
+                    issues.append("Duplicate archive path in backup manifest: \(relativePath)")
+                    continue
+                }
+                if !isSafeArchiveRelativePath(relativePath) {
+                    issues.append("Invalid archive path in backup manifest: \(relativePath)")
+                    continue
+                }
                 let archiveURL = backupURL.appendingPathComponent(relativePath)
                 let archiveIssues = PurchaseExportService.validateArchive(at: archiveURL)
                 if !archiveIssues.isEmpty {
@@ -148,10 +166,24 @@ struct BackupService {
             throw BackupError.invalidManifest
         }
 
+        var seenArchivePaths = Set<String>()
+        for relativePath in manifest.purchaseArchives {
+            guard seenArchivePaths.insert(relativePath).inserted else {
+                throw BackupError.duplicateArchivePath(relativePath)
+            }
+            guard isSafeArchiveRelativePath(relativePath) else {
+                throw BackupError.invalidArchivePath(relativePath)
+            }
+        }
+
         var purchases: [Purchase] = []
         purchases.reserveCapacity(manifest.purchaseArchives.count)
         for relativePath in manifest.purchaseArchives {
             let archiveURL = backupURL.appendingPathComponent(relativePath)
+            let archiveIssues = PurchaseExportService.validateArchive(at: archiveURL)
+            if let firstIssue = archiveIssues.first {
+                throw BackupError.invalidArchive(relativePath, firstIssue)
+            }
             let purchase = try PurchaseExportService.importArchive(at: archiveURL)
             purchases.append(purchase)
         }
@@ -164,5 +196,16 @@ struct BackupService {
         let cleaned = value.components(separatedBy: invalid).joined(separator: "_")
         let trimmed = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "purchase" : trimmed
+    }
+
+    private static func isSafeArchiveRelativePath(_ value: String) -> Bool {
+        guard value.hasPrefix("\(purchasesFolderName)/"),
+              value.hasSuffix(".pparchive"),
+              !value.contains("..") else {
+            return false
+        }
+
+        let path = NSString(string: value)
+        return !path.isAbsolutePath
     }
 }
