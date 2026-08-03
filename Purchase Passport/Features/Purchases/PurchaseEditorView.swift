@@ -83,6 +83,13 @@ struct PurchaseEditorView: View {
 
     @State private var showDiscardConfirmation = false
     @State private var validationMessage: String?
+    @State private var isCoreSectionExpanded = true
+    @State private var isDatesSectionExpanded = true
+    @State private var isFinancialSectionExpanded = true
+    @State private var isProviderSectionExpanded = true
+    @State private var isProductSectionExpanded = true
+    @State private var isLocationSectionExpanded = false
+    @State private var isTagsSectionExpanded = false
 
     init(mode: Mode, onCommit: @escaping (Purchase) -> Void) {
         self.mode = mode
@@ -171,7 +178,7 @@ struct PurchaseEditorView: View {
                     .foregroundStyle(.red)
             }
 
-            Section("Core") {
+            DisclosureGroup("Core", isExpanded: $isCoreSectionExpanded) {
                 TextField("Purchase Name", text: $name)
                 TextField("Category", text: $categoryName)
                 Picker("Status", selection: $status) {
@@ -184,18 +191,18 @@ struct PurchaseEditorView: View {
                     .lineLimit(3, reservesSpace: true)
             }
 
-            Section("Dates") {
+            DisclosureGroup("Dates", isExpanded: $isDatesSectionExpanded) {
                 dateFieldToggle("Order Date", isOn: $hasOrderDate, selection: $orderDate)
                 dateFieldToggle("Purchase Date", isOn: $hasPurchaseDate, selection: $purchaseDate)
                 dateFieldToggle("Delivery Date", isOn: $hasDeliveryDate, selection: $deliveryDate)
             }
 
-            Section("Financial") {
+            DisclosureGroup("Financial", isExpanded: $isFinancialSectionExpanded) {
                 TextField("Purchase Price", text: $purchasePriceText)
                 TextField("Currency (e.g. AUD)", text: $currencyCode)
             }
 
-            Section("Provider") {
+            DisclosureGroup("Provider", isExpanded: $isProviderSectionExpanded) {
                 Picker("Provider", selection: $selectedProviderID) {
                     Text("Select Provider").tag(nil as PersistentIdentifier?)
                     ForEach(organisations) { organisation in
@@ -261,7 +268,7 @@ struct PurchaseEditorView: View {
                 }
             }
 
-            Section("Product") {
+            DisclosureGroup("Product", isExpanded: $isProductSectionExpanded) {
                 TextField("Manufacturer", text: $manufacturer)
                 TextField("Model", text: $modelName)
                 TextField("Serial Number", text: $serialNumber)
@@ -269,7 +276,7 @@ struct PurchaseEditorView: View {
                 TextField("Order Number", text: $orderNumber)
             }
 
-            Section("Location and Ownership") {
+            DisclosureGroup("Location and Ownership", isExpanded: $isLocationSectionExpanded) {
                 TextField("Purchase Location", text: $purchaseLocation)
                 TextField("Storage Location", text: $storageLocation)
                 Picker("Ownership Status", selection: $ownershipStatus) {
@@ -282,7 +289,7 @@ struct PurchaseEditorView: View {
                 TextField("Expected Useful Life Notes", text: $expectedUsefulLifeNotes)
             }
 
-            Section("Tags") {
+            DisclosureGroup("Tags", isExpanded: $isTagsSectionExpanded) {
                 TextField("Comma-separated tags", text: $tagsText)
             }
         }

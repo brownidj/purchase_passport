@@ -56,6 +56,19 @@ struct PurchaseDetailSectionView: View {
     let onExportPDFReport: () -> Void
     let onExportArchive: () -> Void
 
+    @State private var isFinancialExpanded = false
+    @State private var isDetailsExpanded = false
+    @State private var isTagsExpanded = false
+    @State private var isWarrantiesExpanded = false
+    @State private var isRemindersExpanded = false
+    @State private var isInteractionsExpanded = false
+    @State private var isComplaintsExpanded = false
+    @State private var isServiceHistoryExpanded = false
+    @State private var isFaultsExpanded = false
+    @State private var isRepairsExpanded = false
+    @State private var isTimelineExpanded = false
+    @State private var isDocumentsExpanded = false
+
     var body: some View {
         Group {
             if let purchase {
@@ -71,14 +84,13 @@ struct PurchaseDetailSectionView: View {
                         LabeledContent("Delivery Date", value: formattedDate(purchase.deliveryDate))
                     }
 
-                    Section("Financial") {
+                    DisclosureGroup("Financial", isExpanded: $isFinancialExpanded) {
                         LabeledContent("Purchase Price", value: formattedPrice(purchase.purchasePrice, purchase.currencyCode))
                         LabeledContent("Currency", value: purchase.currencyCode ?? "Not set")
                     }
 
-                    Section("Details") {
+                    DisclosureGroup("Details", isExpanded: $isDetailsExpanded) {
                         LabeledContent("Provider", value: purchase.provider?.name ?? "Not set")
-                        LabeledContent("Seller", value: purchase.seller ?? "Not set")
                         LabeledContent("Manufacturer", value: purchase.manufacturer ?? "Not set")
                         LabeledContent("Model", value: purchase.modelName ?? "Not set")
                         LabeledContent("Serial Number", value: purchase.serialNumber ?? "Not set")
@@ -90,11 +102,11 @@ struct PurchaseDetailSectionView: View {
                         LabeledContent("Expected Useful Life", value: formattedUsefulLife(purchase.expectedUsefulLifeMonths, purchase.expectedUsefulLifeNotes))
                     }
 
-                    Section("Tags") {
+                    DisclosureGroup("Tags", isExpanded: $isTagsExpanded) {
                         LabeledContent("Tags", value: formattedTags(purchase.tags))
                     }
 
-                    Section("Warranties") {
+                    DisclosureGroup("Warranties", isExpanded: $isWarrantiesExpanded) {
                         if purchase.warranties.isEmpty {
                             Text("No warranties attached")
                                 .foregroundStyle(.secondary)
@@ -124,7 +136,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Reminders") {
+                    DisclosureGroup("Reminders", isExpanded: $isRemindersExpanded) {
                         if purchase.reminders.isEmpty {
                             Text("No reminders attached")
                                 .foregroundStyle(.secondary)
@@ -154,7 +166,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Interactions") {
+                    DisclosureGroup("Interactions", isExpanded: $isInteractionsExpanded) {
                         Button("Add Interaction", action: onAddInteraction)
 
                         if purchase.interactions.isEmpty {
@@ -186,7 +198,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Complaints and Disputes") {
+                    DisclosureGroup("Complaints and Disputes", isExpanded: $isComplaintsExpanded) {
                         Button("Add Complaint Case", action: onAddComplaint)
 
                         if purchase.complaintCases.isEmpty {
@@ -217,7 +229,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Service History") {
+                    DisclosureGroup("Service History", isExpanded: $isServiceHistoryExpanded) {
                         Button("Add Service Record", action: onAddService)
 
                         if purchase.serviceRecords.isEmpty {
@@ -248,7 +260,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Faults") {
+                    DisclosureGroup("Faults", isExpanded: $isFaultsExpanded) {
                         Button("Add Fault", action: onAddFault)
 
                         if purchase.faultRecords.isEmpty {
@@ -279,7 +291,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Repairs") {
+                    DisclosureGroup("Repairs", isExpanded: $isRepairsExpanded) {
                         Button("Add Repair", action: onAddRepair)
 
                         if purchase.repairRecords.isEmpty {
@@ -310,7 +322,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Timeline") {
+                    DisclosureGroup("Timeline", isExpanded: $isTimelineExpanded) {
                         Picker("Filter", selection: $timelineFilter) {
                             ForEach(TimelineFilter.allCases, id: \.self) { filter in
                                 Text(filter.rawValue).tag(filter)
@@ -336,7 +348,7 @@ struct PurchaseDetailSectionView: View {
                         }
                     }
 
-                    Section("Documents") {
+                    DisclosureGroup("Documents", isExpanded: $isDocumentsExpanded) {
                         if purchase.documents.isEmpty {
                             Text("No documents attached")
                                 .foregroundStyle(.secondary)
