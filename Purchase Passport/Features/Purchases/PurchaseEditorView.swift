@@ -2,6 +2,28 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+private struct ProviderContactDraft: Identifiable, Equatable {
+    let id: UUID
+    var name: String
+    var role: String
+    var emailAddress: String
+    var phoneNumber: String
+
+    init(
+        id: UUID = UUID(),
+        name: String = "",
+        role: String = "",
+        emailAddress: String = "",
+        phoneNumber: String = ""
+    ) {
+        self.id = id
+        self.name = name
+        self.role = role
+        self.emailAddress = emailAddress
+        self.phoneNumber = phoneNumber
+    }
+}
+
 struct PurchaseEditorView: View {
     enum Mode {
         case create
@@ -13,6 +35,7 @@ struct PurchaseEditorView: View {
 
     @Query(sort: \PurchaseCategory.name) private var categories: [PurchaseCategory]
     @Query(sort: \Tag.name) private var tags: [Tag]
+    @Query(sort: \Organisation.name) private var organisations: [Organisation]
 
     private let mode: Mode
     private let onCommit: (Purchase) -> Void
@@ -32,7 +55,17 @@ struct PurchaseEditorView: View {
     @State private var purchasePriceText: String
     @State private var currencyCode: String
 
-    @State private var seller: String
+    @State private var selectedProviderID: PersistentIdentifier?
+    @State private var isCreatingNewProvider: Bool
+    @State private var newProviderBusinessName: String
+    @State private var newProviderEmailAddress: String
+    @State private var newProviderPhoneNumber: String
+    @State private var newProviderWebsite: String
+    @State private var newProviderPostalAddress: String
+    @State private var newProviderPhysicalAddress: String
+    @State private var newProviderCustomerServiceNumber: String
+    @State private var newProviderNotes: String
+    @State private var newProviderContacts: [ProviderContactDraft]
     @State private var manufacturer: String
     @State private var modelName: String
     @State private var serialNumber: String
@@ -69,7 +102,17 @@ struct PurchaseEditorView: View {
             _deliveryDate = State(initialValue: .now)
             _purchasePriceText = State(initialValue: "")
             _currencyCode = State(initialValue: "")
-            _seller = State(initialValue: "")
+            _selectedProviderID = State(initialValue: nil)
+            _isCreatingNewProvider = State(initialValue: false)
+            _newProviderBusinessName = State(initialValue: "")
+            _newProviderEmailAddress = State(initialValue: "")
+            _newProviderPhoneNumber = State(initialValue: "")
+            _newProviderWebsite = State(initialValue: "")
+            _newProviderPostalAddress = State(initialValue: "")
+            _newProviderPhysicalAddress = State(initialValue: "")
+            _newProviderCustomerServiceNumber = State(initialValue: "")
+            _newProviderNotes = State(initialValue: "")
+            _newProviderContacts = State(initialValue: [])
             _manufacturer = State(initialValue: "")
             _modelName = State(initialValue: "")
             _serialNumber = State(initialValue: "")
@@ -95,7 +138,17 @@ struct PurchaseEditorView: View {
             _deliveryDate = State(initialValue: purchase.deliveryDate ?? .now)
             _purchasePriceText = State(initialValue: purchase.purchasePrice.map { NSDecimalNumber(decimal: $0).stringValue } ?? "")
             _currencyCode = State(initialValue: purchase.currencyCode ?? "")
-            _seller = State(initialValue: purchase.seller ?? "")
+            _selectedProviderID = State(initialValue: purchase.provider?.persistentModelID)
+            _isCreatingNewProvider = State(initialValue: false)
+            _newProviderBusinessName = State(initialValue: "")
+            _newProviderEmailAddress = State(initialValue: "")
+            _newProviderPhoneNumber = State(initialValue: "")
+            _newProviderWebsite = State(initialValue: "")
+            _newProviderPostalAddress = State(initialValue: "")
+            _newProviderPhysicalAddress = State(initialValue: "")
+            _newProviderCustomerServiceNumber = State(initialValue: "")
+            _newProviderNotes = State(initialValue: "")
+            _newProviderContacts = State(initialValue: [])
             _manufacturer = State(initialValue: purchase.manufacturer ?? "")
             _modelName = State(initialValue: purchase.modelName ?? "")
             _serialNumber = State(initialValue: purchase.serialNumber ?? "")
@@ -142,8 +195,73 @@ struct PurchaseEditorView: View {
                 TextField("Currency (e.g. AUD)", text: $currencyCode)
             }
 
-            Section("Vendor") {
-                TextField("Seller", text: $seller)
+            Section("Provider") {
+                Picker("Provider", selection: $selectedProviderID) {
+                    Text("Select Provider").tag(nil as PersistentIdentifier?)
+                    ForEach(organisations) { organisation in
+                        Text(organisation.name).tag(organisation.persistentModelID as PersistentIdentifier?)
+                    }
+                }
+
+                Toggle("Add New Provider", isOn: $isCreatingNewProvider)
+
+                if isCreatingNewProvider {
+                    TextField("Business Name", text: $newProviderBusinessName)
+                    TextField("Email Address", text: $newProviderEmailAddress)
+                    TextField("Phone Number", text: $newProviderPhoneNumber)
+                    TextField("Website", text: $newProviderWebsite)
+                    TextField("Customer Service Number", text: $newProviderCustomerServiceNumber)
+                    TextField("Postal Address", text: $newProviderPostalAddress)
+                    TextField("Physical Address", text: $newProviderPhysicalAddress)
+                    TextField("Provider Notes", text: $newProviderNotes, axis: .vertical)
+                        .lineLimit(2, reservesSpace: true)
+
+                    if newProviderContacts.isEmpty {
+                        Text("No provider contacts added")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach($newProviderContacts) { $contact in
+                            VStack(alignment: .leading) {
+                                TextField("Contact Name", text: $contact.name)
+                                TextField("Role", text: $contact.role)
+                                TextField("Email", text: $contact.emailAddress)
+                                TextField("Phone", text: $contact.phoneNumber)
+                            }
+                        }
+                        .onDelete { indexSet in
+                            newProviderContacts.remove(atOffsets: indexSet)
+                        }
+                    }
+
+                    Button("Add Contact") {
+                        newProviderContacts.append(ProviderContactDraft())
+                    }
+                } else if let provider = selectedProvider {
+                    LabeledContent("Business Name", value: provider.name)
+                    LabeledContent("Email", value: provider.emailAddress ?? "Not set")
+                    LabeledContent("Phone", value: provider.phoneNumber ?? "Not set")
+                    LabeledContent("Website", value: provider.website ?? "Not set")
+                    LabeledContent("Customer Service", value: provider.customerServiceNumber ?? "Not set")
+                    LabeledContent("Postal Address", value: provider.postalAddress ?? "Not set")
+                    LabeledContent("Physical Address", value: provider.physicalAddress ?? "Not set")
+                    if provider.contacts.isEmpty {
+                        Text("No contacts on record")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        let sortedContacts = provider.contacts.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                        ForEach(sortedContacts) { contact in
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(contact.name)
+                                Text(formattedProviderContactSummary(contact))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Section("Product") {
                 TextField("Manufacturer", text: $manufacturer)
                 TextField("Model", text: $modelName)
                 TextField("Serial Number", text: $serialNumber)
@@ -205,6 +323,11 @@ struct PurchaseEditorView: View {
         }
     }
 
+    private var selectedProvider: Organisation? {
+        guard let selectedProviderID else { return nil }
+        return organisations.first { $0.persistentModelID == selectedProviderID }
+    }
+
     private var hasUnsavedChanges: Bool {
         true
     }
@@ -222,7 +345,14 @@ struct PurchaseEditorView: View {
     }
 
     private func handleSave() {
-        if let message = PurchaseEditorValidation.validate(name: name) {
+        guard let provider = resolveProvider() else {
+            return
+        }
+
+        if let message = PurchaseEditorValidation.validate(
+            name: name,
+            providerBusinessName: provider.name
+        ) {
             validationMessage = message
             return
         }
@@ -249,7 +379,7 @@ struct PurchaseEditorView: View {
                 deliveryDate: hasDeliveryDate ? deliveryDate : nil,
                 purchasePrice: purchasePrice,
                 currencyCode: normalizedCurrencyCode.nilIfBlank,
-                seller: seller.nilIfBlank,
+                seller: provider.name,
                 manufacturer: manufacturer.nilIfBlank,
                 modelName: modelName.nilIfBlank,
                 serialNumber: serialNumber.nilIfBlank,
@@ -262,6 +392,7 @@ struct PurchaseEditorView: View {
                 expectedUsefulLifeMonths: expectedUsefulLifeMonths,
                 updatedAt: .now,
                 category: category,
+                provider: provider,
                 tags: tags
             )
 
@@ -278,7 +409,7 @@ struct PurchaseEditorView: View {
             purchase.deliveryDate = hasDeliveryDate ? deliveryDate : nil
             purchase.purchasePrice = purchasePrice
             purchase.currencyCode = normalizedCurrencyCode.nilIfBlank
-            purchase.seller = seller.nilIfBlank
+            purchase.seller = provider.name
             purchase.manufacturer = manufacturer.nilIfBlank
             purchase.modelName = modelName.nilIfBlank
             purchase.serialNumber = serialNumber.nilIfBlank
@@ -290,12 +421,66 @@ struct PurchaseEditorView: View {
             purchase.expectedUsefulLifeNotes = expectedUsefulLifeNotes.nilIfBlank
             purchase.expectedUsefulLifeMonths = expectedUsefulLifeMonths
             purchase.category = category
+            purchase.provider = provider
             purchase.tags = tags
             purchase.updatedAt = .now
             onCommit(purchase)
         }
 
         dismiss()
+    }
+
+    private func resolveProvider() -> Organisation? {
+        if isCreatingNewProvider {
+            let businessName = newProviderBusinessName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if businessName.isEmpty {
+                validationMessage = "Provider business name is required."
+                return nil
+            }
+
+            if let existing = organisations.first(where: { $0.name.caseInsensitiveCompare(businessName) == .orderedSame }) {
+                selectedProviderID = existing.persistentModelID
+                return existing
+            }
+
+            let provider = Organisation(
+                name: businessName,
+                emailAddress: newProviderEmailAddress.nilIfBlank,
+                phoneNumber: newProviderPhoneNumber.nilIfBlank,
+                website: newProviderWebsite.nilIfBlank,
+                postalAddress: newProviderPostalAddress.nilIfBlank,
+                physicalAddress: newProviderPhysicalAddress.nilIfBlank,
+                customerServiceNumber: newProviderCustomerServiceNumber.nilIfBlank,
+                notes: newProviderNotes.nilIfBlank
+            )
+            modelContext.insert(provider)
+
+            let contacts = newProviderContacts
+                .map { draft in
+                    Contact(
+                        name: draft.name.trimmingCharacters(in: .whitespacesAndNewlines),
+                        role: draft.role.nilIfBlank,
+                        emailAddress: draft.emailAddress.nilIfBlank,
+                        phoneNumber: draft.phoneNumber.nilIfBlank,
+                        organisation: provider
+                    )
+                }
+                .filter { !$0.name.isEmpty }
+
+            for contact in contacts.sorted(by: { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }) {
+                modelContext.insert(contact)
+                provider.contacts.append(contact)
+            }
+
+            selectedProviderID = provider.persistentModelID
+            return provider
+        }
+
+        guard let selectedProvider else {
+            validationMessage = "A provider is required. Select an existing provider or add a new one."
+            return nil
+        }
+        return selectedProvider
     }
 
     private func findOrCreateCategory(named name: String) -> PurchaseCategory? {
@@ -328,12 +513,31 @@ struct PurchaseEditorView: View {
 
         return result
     }
+
+    private func formattedProviderContactSummary(_ contact: Contact) -> String {
+        let details = [
+            contact.role?.nilIfBlank,
+            contact.emailAddress?.nilIfBlank,
+            contact.phoneNumber?.nilIfBlank
+        ].compactMap { $0 }
+        return details.isEmpty ? "No contact details" : details.joined(separator: " • ")
+    }
 }
 
 enum PurchaseEditorValidation {
     static func validate(name: String) -> String? {
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "Purchase name is required."
+        }
+        return nil
+    }
+
+    static func validate(name: String, providerBusinessName: String) -> String? {
+        if let nameValidation = validate(name: name) {
+            return nameValidation
+        }
+        if providerBusinessName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Provider business name is required."
         }
         return nil
     }

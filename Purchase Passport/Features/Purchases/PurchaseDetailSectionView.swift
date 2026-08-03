@@ -77,6 +77,7 @@ struct PurchaseDetailSectionView: View {
                     }
 
                     Section("Details") {
+                        LabeledContent("Provider", value: purchase.provider?.name ?? "Not set")
                         LabeledContent("Seller", value: purchase.seller ?? "Not set")
                         LabeledContent("Manufacturer", value: purchase.manufacturer ?? "Not set")
                         LabeledContent("Model", value: purchase.modelName ?? "Not set")

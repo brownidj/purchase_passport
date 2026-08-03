@@ -33,6 +33,7 @@ final class Purchase {
     var updatedAt: Date
 
     var category: PurchaseCategory?
+    var provider: Organisation?
 
     var transactions: [FinancialTransaction]
 
@@ -80,6 +81,7 @@ final class Purchase {
         createdAt: Date = .now,
         updatedAt: Date = .now,
         category: PurchaseCategory? = nil,
+        provider: Organisation? = nil,
         transactions: [FinancialTransaction] = [],
         tags: [Tag] = [],
         contacts: [Contact] = [],
@@ -115,6 +117,7 @@ final class Purchase {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.category = category
+        self.provider = provider
         self.transactions = transactions
         self.tags = tags
         self.contacts = contacts

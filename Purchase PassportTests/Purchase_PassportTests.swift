@@ -22,6 +22,22 @@ struct Purchase_PassportTests {
         #expect(result == nil)
     }
 
+    @Test func purchaseEditorValidationFailsForBlankProviderName() {
+        let result = PurchaseEditorValidation.validate(
+            name: "MacBook Pro",
+            providerBusinessName: "   "
+        )
+        #expect(result == "Provider business name is required.")
+    }
+
+    @Test func purchaseEditorValidationPassesForProviderName() {
+        let result = PurchaseEditorValidation.validate(
+            name: "MacBook Pro",
+            providerBusinessName: "Tech World Townsville"
+        )
+        #expect(result == nil)
+    }
+
     @Test func reminderServiceCalculatesNextMonthlyDueDate() {
         let calendar = Calendar(identifier: .gregorian)
         let dueDate = calendar.date(from: DateComponents(year: 2026, month: 1, day: 15))!
