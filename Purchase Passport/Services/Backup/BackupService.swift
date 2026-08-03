@@ -10,11 +10,23 @@ struct BackupService {
 
     enum BackupError: LocalizedError {
         case invalidDestination
+        case backupFolderMissing
+        case manifestMissing
+        case unsupportedSchemaVersion(Int)
+        case invalidManifest
 
         var errorDescription: String? {
             switch self {
             case .invalidDestination:
                 return "The selected backup destination is invalid."
+            case .backupFolderMissing:
+                return "The backup folder could not be found."
+            case .manifestMissing:
+                return "The backup manifest is missing."
+            case .unsupportedSchemaVersion(let version):
+                return "The backup schema version \(version) is not supported."
+            case .invalidManifest:
+                return "The backup manifest is invalid."
             }
         }
     }
@@ -105,6 +117,46 @@ struct BackupService {
         }
 
         return issues
+    }
+
+    static func restoreBackup(at backupURL: URL) throws -> [Purchase] {
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: backupURL.path) else {
+            throw BackupError.backupFolderMissing
+        }
+
+        let manifestURL = backupURL.appendingPathComponent(manifestFileName)
+        guard fileManager.fileExists(atPath: manifestURL.path) else {
+            throw BackupError.manifestMissing
+        }
+
+        let manifestData = try Data(contentsOf: manifestURL)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let manifest: BackupManifest
+        do {
+            manifest = try decoder.decode(BackupManifest.self, from: manifestData)
+        } catch {
+            throw BackupError.invalidManifest
+        }
+
+        guard manifest.schemaVersion == backupSchemaVersion else {
+            throw BackupError.unsupportedSchemaVersion(manifest.schemaVersion)
+        }
+
+        guard manifest.purchaseCount == manifest.purchaseArchives.count else {
+            throw BackupError.invalidManifest
+        }
+
+        var purchases: [Purchase] = []
+        purchases.reserveCapacity(manifest.purchaseArchives.count)
+        for relativePath in manifest.purchaseArchives {
+            let archiveURL = backupURL.appendingPathComponent(relativePath)
+            let purchase = try PurchaseExportService.importArchive(at: archiveURL)
+            purchases.append(purchase)
+        }
+
+        return purchases
     }
 
     private static func sanitize(_ value: String) -> String {

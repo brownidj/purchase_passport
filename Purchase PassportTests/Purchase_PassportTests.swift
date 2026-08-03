@@ -526,4 +526,97 @@ struct Purchase_PassportTests {
         #expect(issues.isEmpty)
     }
 
+    @Test func purchaseArchiveImportRestoresPurchaseFields() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchase = Purchase(
+            name: "Imported Purchase",
+            status: .active,
+            purchaseDate: Date(timeIntervalSince1970: 1_700_000_000),
+            purchasePrice: Decimal(string: "1499.95"),
+            currencyCode: "AUD",
+            seller: "Retailer",
+            manufacturer: "Maker"
+        )
+
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let archiveURL = tempRoot.appendingPathComponent("import.pparchive", isDirectory: true)
+        try PurchaseExportService.exportArchive(for: purchase, to: archiveURL)
+
+        let restored = try PurchaseExportService.importArchive(at: archiveURL)
+        #expect(restored.name == "Imported Purchase")
+        #expect(restored.status == .active)
+        #expect(restored.currencyCode == "AUD")
+        #expect(restored.purchasePrice == Decimal(string: "1499.95"))
+        #expect(restored.seller == "Retailer")
+        #expect(restored.manufacturer == "Maker")
+    }
+
+    @Test func purchaseArchiveImportFailsWhenManifestReferencesMissingAttachment() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let archiveURL = tempRoot.appendingPathComponent("broken.pparchive", isDirectory: true)
+        try fileManager.createDirectory(at: archiveURL, withIntermediateDirectories: true)
+        let attachmentsURL = archiveURL.appendingPathComponent("attachments", isDirectory: true)
+        try fileManager.createDirectory(at: attachmentsURL, withIntermediateDirectories: true)
+
+        let manifestURL = archiveURL.appendingPathComponent("manifest.json")
+        let manifestObject: [String: Any] = [
+            "schemaVersion": 1,
+            "exportedAt": ISO8601DateFormatter().string(from: .now),
+            "purchaseName": "Broken Import",
+            "purchaseStatus": PurchaseStatus.active.rawValue,
+            "attachmentCount": 1,
+            "attachments": [
+                [
+                    "documentIdentifier": UUID().uuidString,
+                    "title": "Missing Receipt",
+                    "category": DocumentCategory.receipt.rawValue,
+                    "originalFilename": "receipt.pdf",
+                    "archivedRelativePath": "attachments/missing-receipt.pdf"
+                ]
+            ]
+        ]
+        let data = try JSONSerialization.data(withJSONObject: manifestObject, options: [.prettyPrinted, .sortedKeys])
+        try data.write(to: manifestURL, options: .atomic)
+
+        do {
+            _ = try PurchaseExportService.importArchive(at: archiveURL)
+            Issue.record("Expected missing attachment error.")
+        } catch let error as PurchaseExportService.ExportError {
+            switch error {
+            case .missingAttachment(let relativePath):
+                #expect(relativePath == "attachments/missing-receipt.pdf")
+            default:
+                Issue.record("Unexpected export error: \(error.localizedDescription)")
+            }
+        } catch {
+            Issue.record("Unexpected error type: \(error.localizedDescription)")
+        }
+    }
+
+    @Test func backupRestoreReturnsAllPurchasesFromBackup() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let purchases = [
+            Purchase(name: "Restore One", status: .active),
+            Purchase(name: "Restore Two", status: .ordered)
+        ]
+
+        try fileManager.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        let backupURL = tempRoot.appendingPathComponent("restore.ppbackup", isDirectory: true)
+        try BackupService.exportBackup(for: purchases, to: backupURL)
+
+        let restored = try BackupService.restoreBackup(at: backupURL)
+        #expect(restored.count == 2)
+        #expect(restored.contains(where: { $0.name == "Restore One" }))
+        #expect(restored.contains(where: { $0.name == "Restore Two" }))
+    }
+
 }

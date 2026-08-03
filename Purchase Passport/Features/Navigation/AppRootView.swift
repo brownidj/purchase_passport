@@ -512,6 +512,14 @@ struct AppRootView: View {
                     exportFullBackup()
                 }
                 .disabled(purchases.isEmpty)
+
+                Button("Import Archive") {
+                    importPurchaseArchive()
+                }
+
+                Button("Restore Backup") {
+                    restoreFullBackup()
+                }
             }
         }
     }
@@ -1159,6 +1167,48 @@ struct AppRootView: View {
                 return
             }
             operationAlertTitle = "Backup Error"
+            operationAlertMessage = error.localizedDescription
+        }
+    }
+
+    private func importPurchaseArchive() {
+        do {
+            let importedPurchase = try AppRootWorkflowCoordinator.importPurchaseArchive()
+            modelContext.insert(importedPurchase)
+            try modelContext.save()
+            selectedSection = .allPurchases
+            selectedPurchase = importedPurchase
+            operationAlertTitle = "Archive Imported"
+            operationAlertMessage = "Imported purchase: \(importedPurchase.name)"
+        } catch {
+            if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
+               workflowError == .cancelled {
+                return
+            }
+            operationAlertTitle = "Import Error"
+            operationAlertMessage = error.localizedDescription
+        }
+    }
+
+    private func restoreFullBackup() {
+        do {
+            let restoredPurchases = try AppRootWorkflowCoordinator.restoreFullBackup()
+            for purchase in restoredPurchases {
+                modelContext.insert(purchase)
+            }
+            try modelContext.save()
+            selectedSection = .allPurchases
+            if let firstPurchase = restoredPurchases.first {
+                selectedPurchase = firstPurchase
+            }
+            operationAlertTitle = "Backup Restored"
+            operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s)."
+        } catch {
+            if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
+               workflowError == .cancelled {
+                return
+            }
+            operationAlertTitle = "Restore Error"
             operationAlertMessage = error.localizedDescription
         }
     }

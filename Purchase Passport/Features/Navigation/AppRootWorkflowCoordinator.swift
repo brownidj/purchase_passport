@@ -196,6 +196,22 @@ struct AppRootWorkflowCoordinator {
         return destinationURL
     }
 
+    static func importPurchaseArchive() throws -> Purchase {
+        let archiveURL = try openDirectoryURL(
+            title: "Import Purchase Archive",
+            allowedContentTypes: [UTType(filenameExtension: "pparchive")].compactMap { $0 }
+        )
+        return try PurchaseExportService.importArchive(at: archiveURL)
+    }
+
+    static func restoreFullBackup() throws -> [Purchase] {
+        let backupURL = try openDirectoryURL(
+            title: "Restore Full Backup",
+            allowedContentTypes: [UTType(filenameExtension: "ppbackup")].compactMap { $0 }
+        )
+        return try BackupService.restoreBackup(at: backupURL)
+    }
+
     static func validatePurchaseArchive(at archiveURL: URL) -> [String] {
         PurchaseExportService.validateArchive(at: archiveURL)
     }
@@ -213,6 +229,27 @@ struct AppRootWorkflowCoordinator {
         panel.title = title
         panel.nameFieldStringValue = defaultFileName
         panel.canCreateDirectories = true
+        if !allowedContentTypes.isEmpty {
+            panel.allowedContentTypes = allowedContentTypes
+        }
+
+        let response = panel.runModal()
+        guard response == .OK, let url = panel.url else {
+            throw ExportWorkflowError.cancelled
+        }
+        return url
+    }
+
+    private static func openDirectoryURL(
+        title: String,
+        allowedContentTypes: [UTType] = []
+    ) throws -> URL {
+        let panel = NSOpenPanel()
+        panel.title = title
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = false
         if !allowedContentTypes.isEmpty {
             panel.allowedContentTypes = allowedContentTypes
         }

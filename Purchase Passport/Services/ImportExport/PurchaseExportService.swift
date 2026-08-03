@@ -25,11 +25,26 @@ struct PurchaseExportService {
 
     enum ExportError: LocalizedError {
         case invalidDestination
+        case archiveFolderMissing
+        case manifestMissing
+        case unsupportedSchemaVersion(Int)
+        case invalidManifest
+        case missingAttachment(String)
 
         var errorDescription: String? {
             switch self {
             case .invalidDestination:
                 return "The selected export destination is invalid."
+            case .archiveFolderMissing:
+                return "The archive folder could not be found."
+            case .manifestMissing:
+                return "The archive manifest is missing."
+            case .unsupportedSchemaVersion(let version):
+                return "The archive schema version \(version) is not supported."
+            case .invalidManifest:
+                return "The archive manifest is invalid."
+            case .missingAttachment(let path):
+                return "The archive attachment is missing: \(path)"
             }
         }
     }
@@ -188,6 +203,67 @@ struct PurchaseExportService {
         return issues
     }
 
+    static func importArchive(at archiveURL: URL) throws -> Purchase {
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: archiveURL.path) else {
+            throw ExportError.archiveFolderMissing
+        }
+
+        let manifestURL = archiveURL.appendingPathComponent(manifestFileName)
+        guard fileManager.fileExists(atPath: manifestURL.path) else {
+            throw ExportError.manifestMissing
+        }
+
+        let manifestData = try Data(contentsOf: manifestURL)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let manifest: PurchaseArchiveManifest
+        do {
+            manifest = try decoder.decode(PurchaseArchiveManifest.self, from: manifestData)
+        } catch {
+            throw ExportError.invalidManifest
+        }
+
+        guard manifest.schemaVersion == archiveSchemaVersion else {
+            throw ExportError.unsupportedSchemaVersion(manifest.schemaVersion)
+        }
+
+        guard manifest.attachmentCount == manifest.attachments.count else {
+            throw ExportError.invalidManifest
+        }
+
+        let purchase = Purchase(
+            name: manifest.purchaseName,
+            status: PurchaseStatus(rawValue: manifest.purchaseStatus) ?? .researching,
+            purchaseDate: parseISO8601Date(manifest.purchaseDateISO8601),
+            purchasePrice: parseDecimal(manifest.purchasePrice),
+            currencyCode: manifest.currencyCode,
+            seller: manifest.seller,
+            manufacturer: manifest.manufacturer
+        )
+
+        for attachment in manifest.attachments {
+            let sourceURL = archiveURL.appendingPathComponent(attachment.archivedRelativePath)
+            guard fileManager.fileExists(atPath: sourceURL.path) else {
+                throw ExportError.missingAttachment(attachment.archivedRelativePath)
+            }
+
+            let imported = try DocumentStorageService.importFile(from: sourceURL)
+            let document = StoredDocument(
+                identifier: attachment.documentIdentifier,
+                title: attachment.title,
+                category: DocumentCategory(rawValue: attachment.category) ?? .other,
+                originalFilename: attachment.originalFilename,
+                contentType: imported.contentType,
+                storedRelativePath: imported.storedRelativePath,
+                purchase: purchase
+            )
+            purchase.documents.append(document)
+        }
+
+        return purchase
+    }
+
     private static func formattedPrice(for purchase: Purchase) -> String {
         guard let amount = purchase.purchasePrice else { return "Not set" }
         let value = NSDecimalNumber(decimal: amount).stringValue
@@ -200,6 +276,16 @@ struct PurchaseExportService {
     private static func iso8601String(from date: Date?) -> String? {
         guard let date else { return nil }
         return ISO8601DateFormatter().string(from: date)
+    }
+
+    private static func parseISO8601Date(_ value: String?) -> Date? {
+        guard let value else { return nil }
+        return ISO8601DateFormatter().date(from: value)
+    }
+
+    private static func parseDecimal(_ value: String?) -> Decimal? {
+        guard let value else { return nil }
+        return Decimal(string: value)
     }
 
     private static func sanitizeFileName(_ value: String) -> String {
