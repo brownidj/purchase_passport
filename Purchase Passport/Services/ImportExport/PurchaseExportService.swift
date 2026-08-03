@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import CryptoKit
 
 struct PurchaseExportService {
     struct AttachmentManifestEntry: Codable, Equatable {
@@ -8,6 +9,7 @@ struct PurchaseExportService {
         let category: String
         let originalFilename: String
         let archivedRelativePath: String
+        let sha256Hex: String?
     }
 
     struct PurchaseArchiveManifest: Codable, Equatable {
@@ -38,6 +40,7 @@ struct PurchaseExportService {
         case invalidPurchasePrice(String)
         case duplicateAttachmentIdentifier(UUID)
         case duplicateAttachmentPath(String)
+        case attachmentChecksumMismatch(String)
 
         var errorDescription: String? {
             switch self {
@@ -67,6 +70,8 @@ struct PurchaseExportService {
                 return "The archive contains duplicate attachment identifiers: \(identifier.uuidString)"
             case .duplicateAttachmentPath(let value):
                 return "The archive contains duplicate attachment paths: \(value)"
+            case .attachmentChecksumMismatch(let path):
+                return "The archive attachment checksum does not match: \(path)"
             }
         }
     }
@@ -164,7 +169,8 @@ struct PurchaseExportService {
                     title: document.title,
                     category: document.category.rawValue,
                     originalFilename: document.originalFilename,
-                    archivedRelativePath: relativePath
+                    archivedRelativePath: relativePath,
+                    sha256Hex: checksumHex(forFileAt: destinationURL)
                 )
             )
         }
@@ -263,6 +269,13 @@ struct PurchaseExportService {
                 let attachmentURL = archiveURL.appendingPathComponent(attachment.archivedRelativePath)
                 if !fileManager.fileExists(atPath: attachmentURL.path) {
                     issues.append("Missing attachment file: \(attachment.archivedRelativePath)")
+                    continue
+                }
+
+                if let expectedChecksum = attachment.sha256Hex,
+                   let actualChecksum = checksumHex(forFileAt: attachmentURL),
+                   expectedChecksum != actualChecksum {
+                    issues.append("Checksum mismatch for attachment: \(attachment.archivedRelativePath)")
                 }
             }
         } catch {
@@ -317,6 +330,12 @@ struct PurchaseExportService {
             guard fileManager.fileExists(atPath: sourceURL.path) else {
                 throw ExportError.missingAttachment(attachment.archivedRelativePath)
             }
+            if let expectedChecksum = attachment.sha256Hex {
+                let actualChecksum = checksumHex(forFileAt: sourceURL)
+                guard actualChecksum == expectedChecksum else {
+                    throw ExportError.attachmentChecksumMismatch(attachment.archivedRelativePath)
+                }
+            }
 
             let imported = try DocumentStorageService.importFile(from: sourceURL)
             let document = StoredDocument(
@@ -370,6 +389,12 @@ struct PurchaseExportService {
         }
         let path = NSString(string: value)
         return !path.isAbsolutePath
+    }
+
+    private static func checksumHex(forFileAt fileURL: URL) -> String? {
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        let digest = SHA256.hash(data: data)
+        return digest.map { String(format: "%02x", $0) }.joined()
     }
 
     private static func validateManifestForImport(_ manifest: PurchaseArchiveManifest) throws {

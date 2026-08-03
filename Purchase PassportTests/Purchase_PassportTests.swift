@@ -813,4 +813,79 @@ struct Purchase_PassportTests {
         #expect(issues.contains(where: { $0.contains("Invalid archive path in backup manifest") }))
     }
 
+    @Test func purchaseArchiveValidationReportsChecksumMismatchAfterTamper() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let sourceURL = tempRoot.appendingPathComponent("receipt.txt")
+        try "original".write(to: sourceURL, atomically: true, encoding: .utf8)
+        let imported = try DocumentStorageService.importFile(from: sourceURL)
+
+        let purchase = Purchase(name: "Checksum Validation Test", status: .active)
+        let document = StoredDocument(
+            title: "Receipt",
+            category: .receipt,
+            originalFilename: imported.originalFilename,
+            contentType: imported.contentType,
+            storedRelativePath: imported.storedRelativePath,
+            purchase: purchase
+        )
+        purchase.documents = [document]
+
+        let archiveURL = tempRoot.appendingPathComponent("checksum-validate.pparchive", isDirectory: true)
+        try PurchaseExportService.exportArchive(for: purchase, to: archiveURL)
+
+        let archivedAttachmentURL = archiveURL
+            .appendingPathComponent("attachments", isDirectory: true)
+            .appendingPathComponent("\(document.identifier.uuidString)-receipt.txt")
+        try "tampered".write(to: archivedAttachmentURL, atomically: true, encoding: .utf8)
+
+        let issues = PurchaseExportService.validateArchive(at: archiveURL)
+        #expect(issues.contains(where: { $0.contains("Checksum mismatch for attachment") }))
+    }
+
+    @Test func purchaseArchiveImportFailsWhenAttachmentChecksumMismatches() throws {
+        let fileManager = FileManager.default
+        let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? fileManager.removeItem(at: tempRoot) }
+
+        let sourceURL = tempRoot.appendingPathComponent("invoice.txt")
+        try "original-invoice".write(to: sourceURL, atomically: true, encoding: .utf8)
+        let imported = try DocumentStorageService.importFile(from: sourceURL)
+
+        let purchase = Purchase(name: "Checksum Import Test", status: .active)
+        let document = StoredDocument(
+            title: "Invoice",
+            category: .invoice,
+            originalFilename: imported.originalFilename,
+            contentType: imported.contentType,
+            storedRelativePath: imported.storedRelativePath,
+            purchase: purchase
+        )
+        purchase.documents = [document]
+
+        let archiveURL = tempRoot.appendingPathComponent("checksum-import.pparchive", isDirectory: true)
+        try PurchaseExportService.exportArchive(for: purchase, to: archiveURL)
+
+        let archivedAttachmentURL = archiveURL
+            .appendingPathComponent("attachments", isDirectory: true)
+            .appendingPathComponent("\(document.identifier.uuidString)-invoice.txt")
+        try "tampered-invoice".write(to: archivedAttachmentURL, atomically: true, encoding: .utf8)
+
+        do {
+            _ = try PurchaseExportService.importArchive(at: archiveURL)
+            Issue.record("Expected attachment checksum mismatch error.")
+        } catch let error as PurchaseExportService.ExportError {
+            switch error {
+            case .attachmentChecksumMismatch(let relativePath):
+                #expect(relativePath == "attachments/\(document.identifier.uuidString)-invoice.txt")
+            default:
+                Issue.record("Unexpected export error: \(error.localizedDescription)")
+            }
+        } catch {
+            Issue.record("Unexpected error type: \(error.localizedDescription)")
+        }
+    }
+
 }
