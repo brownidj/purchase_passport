@@ -1,0 +1,37 @@
+{
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Services/Complaints/ComplaintService.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ComplaintService.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ComplaintService.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ComplaintService.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ComplaintService.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ComplaintService.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Services/Dashboard/DashboardService.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DashboardService.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DashboardService.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DashboardService.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DashboardService.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DashboardService.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Services/Documents/DocumentStorageService.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DocumentStorageService.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DocumentStorageService.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DocumentStorageService.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DocumentStorageService.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/DocumentStorageService.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Services/Reminders/ReminderService.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderService.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderService.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderService.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderService.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderService.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Services/Repairs/RepairCostService.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/RepairCostService.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/RepairCostService.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/RepairCostService.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/RepairCostService.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/RepairCostService.swiftdeps"
+  }
+}

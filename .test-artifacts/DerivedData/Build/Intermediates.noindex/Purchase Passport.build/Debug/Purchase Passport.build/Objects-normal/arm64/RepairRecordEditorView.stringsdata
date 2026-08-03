@@ -1,0 +1,208 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Servicing/RepairRecordEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "Work",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 112
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cost",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "Repair Provider",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "Booking Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "Booking",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Repair Date",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Related Fault",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Diagnosis",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 108
+        }
+      },
+      {
+        "comment": "",
+        "key": "None",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Work Performed",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 113
+        }
+      },
+      {
+        "comment": "",
+        "key": "Parts Replaced",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 115
+        }
+      },
+      {
+        "comment": "",
+        "key": "Outcome",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unresolved Issues",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 117
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up Required",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 119
+        }
+      },
+      {
+        "comment": "",
+        "key": "Labour Cost",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Parts Cost",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "Total Cost",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "Currency",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "Warranty Coverage",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
+        "key": "Payment Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 128
+        }
+      },
+      {
+        "comment": "",
+        "key": "Repair Warranty Details",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 133
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 134
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 146
+        }
+      }
+    ]
+  },
+  "version": 1
+}

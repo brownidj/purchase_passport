@@ -1,0 +1,296 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Complaints/ComplaintSectionViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Complaints",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add a complaint case from a purchase detail view.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Complaint Cases",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 14
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 25
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Complaint",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select a complaint case to view details.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Complaint Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resolution and Deadlines",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Linked Records",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Chronology",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 100
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Issue Type",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date Opened",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date Closed",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Party Responsible",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Desired Resolution",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Consumer Guarantee/Warranty",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Response Deadline",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Deadline State",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Commitments",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Outcome",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Compensation Details",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Interactions",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Faults",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "Repairs",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Documents",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "No chronology available",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ • %@",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Chronology Notes",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Key Evidence",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Correspondence",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 103
+        }
+      }
+    ]
+  },
+  "version": 1
+}

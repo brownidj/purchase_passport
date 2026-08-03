@@ -1,0 +1,80 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Navigation/AppRootView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Document Import Error",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "All Purchases",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 441
+        }
+      },
+      {
+        "comment": "",
+        "key": "Create a purchase record to see it listed here.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 417
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Purchases Yet",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 415
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 428
+        }
+      },
+      {
+        "comment": "",
+        "key": "New Purchase",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 444
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Purchase",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 449
+        }
+      },
+      {
+        "comment": "",
+        "key": "Import Document",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 455
+        }
+      }
+    ]
+  },
+  "version": 1
+}

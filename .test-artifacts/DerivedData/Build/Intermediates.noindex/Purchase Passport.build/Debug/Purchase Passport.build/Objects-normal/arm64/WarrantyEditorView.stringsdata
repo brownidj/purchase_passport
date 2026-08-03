@@ -1,0 +1,176 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Warranties/WarrantyEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coverage",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Options",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 100
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Provider",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Date",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "End Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "End Date",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coverage Description",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 94
+        }
+      },
+      {
+        "comment": "",
+        "key": "Claim Procedure",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "Proof Of Purchase Required",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Transferable",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 107
+        }
+      },
+      {
+        "comment": "",
+        "key": "Not set",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Yes",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 104
+        }
+      },
+      {
+        "comment": "",
+        "key": "No",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 115
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 122
+        }
+      }
+    ]
+  },
+  "version": 1
+}

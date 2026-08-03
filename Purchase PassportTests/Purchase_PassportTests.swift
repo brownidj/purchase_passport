@@ -847,6 +847,16 @@ struct Purchase_PassportTests {
         #expect(importedDocument.identifier == resolutions.first?.resolvedIdentifier)
     }
 
+    @Test func appRootFormattingValidationIssueSummaryTruncatesOutput() {
+        let issues = (1...10).map { "Issue \($0)" }
+        let summary = AppRootFormatting.validationIssueSummary(issues)
+
+        #expect(summary.contains("• Issue 1"))
+        #expect(summary.contains("• Issue 8"))
+        #expect(!summary.contains("• Issue 9"))
+        #expect(summary.contains("…and 2 more issue(s)."))
+    }
+
     @Test func purchaseArchiveValidationReportsChecksumMismatchAfterTamper() throws {
         let fileManager = FileManager.default
         let tempRoot = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)

@@ -1,0 +1,192 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Interactions/InteractionSectionViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Interactions",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add an interaction from a purchase detail view.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 17
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Interactions",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Interaction",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select an interaction to view details.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Interaction Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Party",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "Details",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Subject",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Occurred",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Party Contacted",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Contact Person",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Detailed Notes",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Commitments",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Action",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 75
+        }
+      }
+    ]
+  },
+  "version": 1
+}

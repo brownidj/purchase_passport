@@ -1,0 +1,44 @@
+{
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/InteractionType.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/InteractionType.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/InteractionType.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/InteractionType.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/InteractionType.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/InteractionType.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/OwnershipStatus.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/OwnershipStatus.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/OwnershipStatus.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/OwnershipStatus.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/OwnershipStatus.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/OwnershipStatus.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/PaymentType.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PaymentType.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PaymentType.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PaymentType.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PaymentType.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PaymentType.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/PurchaseStatus.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PurchaseStatus.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PurchaseStatus.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PurchaseStatus.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PurchaseStatus.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/PurchaseStatus.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/ReminderPriority.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderPriority.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderPriority.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderPriority.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderPriority.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderPriority.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Domain/Enums/ReminderRecurrence.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderRecurrence.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderRecurrence.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderRecurrence.dia",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderRecurrence.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase Passport.build/Objects-normal/arm64/ReminderRecurrence.swiftdeps"
+  }
+}

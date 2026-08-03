@@ -1,0 +1,152 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Interactions/InteractionEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "Parties",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Details",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "Occurred",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Subject",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Party Contacted",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "Contact Person",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "Detailed Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "Promises Or Commitments",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Action",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 104
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 112
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 119
+        }
+      }
+    ]
+  },
+  "version": 1
+}

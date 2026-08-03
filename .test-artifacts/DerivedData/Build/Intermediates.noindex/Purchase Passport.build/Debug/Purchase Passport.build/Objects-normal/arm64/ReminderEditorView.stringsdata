@@ -1,0 +1,120 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Reminders/ReminderEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Schedule",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "Specific Time",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Due",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Advance Warning Days",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recurrence",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Priority",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completed",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 108
+        }
+      }
+    ]
+  },
+  "version": 1
+}

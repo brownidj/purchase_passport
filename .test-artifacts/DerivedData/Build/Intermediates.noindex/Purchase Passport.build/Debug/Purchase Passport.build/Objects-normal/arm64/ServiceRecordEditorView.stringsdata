@@ -1,0 +1,216 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Servicing/ServiceRecordEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cost",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 106
+        }
+      },
+      {
+        "comment": "",
+        "key": "Work",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 113
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Service",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service Type",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service Provider",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "Booking Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Booking",
+        "location": {
+          "startingColumn": 48,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 100
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service",
+        "location": {
+          "startingColumn": 48,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completion Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completion",
+        "location": {
+          "startingColumn": 51,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cost",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 107
+        }
+      },
+      {
+        "comment": "",
+        "key": "Currency",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 108
+        }
+      },
+      {
+        "comment": "",
+        "key": "Usage Reading",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 110
+        }
+      },
+      {
+        "comment": "",
+        "key": "Work Requested",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 114
+        }
+      },
+      {
+        "comment": "",
+        "key": "Work Completed",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Parts Replaced",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 118
+        }
+      },
+      {
+        "comment": "",
+        "key": "Technician Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 119
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Service Date",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Service",
+        "location": {
+          "startingColumn": 52,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Service Interval (months)",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 139
+        }
+      }
+    ]
+  },
+  "version": 1
+}

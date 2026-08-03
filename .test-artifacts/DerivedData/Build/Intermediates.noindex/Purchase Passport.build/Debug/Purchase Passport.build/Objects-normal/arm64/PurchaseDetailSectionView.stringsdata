@@ -1,0 +1,504 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Purchases/PurchaseDetailSectionView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Select a purchase in the list to view details.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 399
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Purchase Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 397
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Financial",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Details",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tags",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Warranties",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reminders",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Interactions",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 153
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complaints and Disputes",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 185
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service History",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 216
+        }
+      },
+      {
+        "comment": "",
+        "key": "Faults",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "Repairs",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 278
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timeline",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 309
+        }
+      },
+      {
+        "comment": "",
+        "key": "Documents",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 335
+        }
+      },
+      {
+        "comment": "",
+        "key": "Name",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Category",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Description",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Order Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delivery Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Price",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Currency",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seller",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manufacturer",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "Model",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Serial Number",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "Invoice Number",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Order Number",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Location",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "Storage Location",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ownership",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Expected Useful Life",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tags",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "No warranties attached",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "No reminders attached",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "No interactions attached",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Interaction",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "No complaint cases attached",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 189
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Complaint Case",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 186
+        }
+      },
+      {
+        "comment": "",
+        "key": "No service records",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 220
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Service Record",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 217
+        }
+      },
+      {
+        "comment": "",
+        "key": "No faults recorded",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 251
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Fault",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 248
+        }
+      },
+      {
+        "comment": "",
+        "key": "No repairs recorded",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 282
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Repair",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 279
+        }
+      },
+      {
+        "comment": "",
+        "key": "No timeline events for this filter",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 319
+        }
+      },
+      {
+        "comment": "",
+        "key": "Filter",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 310
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ • %@",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 326
+        }
+      },
+      {
+        "comment": "",
+        "key": "No documents attached",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 337
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Warranty",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 368
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Warranty",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 369
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Reminder",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 372
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Reminder",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 373
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Interaction",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 376
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Complaint Case",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 379
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Service",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 382
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Fault",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 385
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Repair",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 388
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Document",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 391
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,264 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Purchases/PurchaseEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Discard Changes?",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 189
+        }
+      },
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 121
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dates",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 134
+        }
+      },
+      {
+        "comment": "",
+        "key": "Financial",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "Vendor",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 145
+        }
+      },
+      {
+        "comment": "",
+        "key": "Location and Ownership",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tags",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 167
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Name",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "Category",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "Description",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 130
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Price",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 141
+        }
+      },
+      {
+        "comment": "",
+        "key": "Currency (e.g. AUD)",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seller",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manufacturer",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 147
+        }
+      },
+      {
+        "comment": "",
+        "key": "Model",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 148
+        }
+      },
+      {
+        "comment": "",
+        "key": "Serial Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 149
+        }
+      },
+      {
+        "comment": "",
+        "key": "Invoice Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 150
+        }
+      },
+      {
+        "comment": "",
+        "key": "Order Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 151
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase Location",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 155
+        }
+      },
+      {
+        "comment": "",
+        "key": "Storage Location",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 156
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ownership Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "Expected Useful Life (months)",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 163
+        }
+      },
+      {
+        "comment": "",
+        "key": "Expected Useful Life Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Not set",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "Comma-separated tags",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 168
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 176
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "Keep Editing",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "Discard",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 191
+        }
+      },
+      {
+        "comment": "",
+        "key": "You have unsaved changes. Discard them?",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 195
+        }
+      }
+    ]
+  },
+  "version": 1
+}

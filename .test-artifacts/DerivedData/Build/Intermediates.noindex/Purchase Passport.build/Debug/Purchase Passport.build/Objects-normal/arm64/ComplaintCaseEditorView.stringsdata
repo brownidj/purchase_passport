@@ -1,0 +1,264 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Complaints/ComplaintCaseEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "Resolution",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 119
+        }
+      },
+      {
+        "comment": "",
+        "key": "Chronology and Evidence",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 130
+        }
+      },
+      {
+        "comment": "",
+        "key": "Deadlines",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 139
+        }
+      },
+      {
+        "comment": "",
+        "key": "Related Interactions",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 151
+        }
+      },
+      {
+        "comment": "",
+        "key": "Related Faults",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 162
+        }
+      },
+      {
+        "comment": "",
+        "key": "Related Repairs",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "Related Documents",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 184
+        }
+      },
+      {
+        "comment": "",
+        "key": "Case Title",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Issue Type",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 104
+        }
+      },
+      {
+        "comment": "",
+        "key": "Party Responsible",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date Opened",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 110
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Case or Reference Number",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Desired Resolution",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 120
+        }
+      },
+      {
+        "comment": "",
+        "key": "Consumer Guarantee or Warranty",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "Commitments Made",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Outcome",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "Compensation / Replacement / Refund Details",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "Chronology",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 131
+        }
+      },
+      {
+        "comment": "",
+        "key": "Key Evidence",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 133
+        }
+      },
+      {
+        "comment": "",
+        "key": "Correspondence",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Has Response Deadline",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "Response Deadline",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Case Closed",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 144
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date Closed",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "No interactions available",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 153
+        }
+      },
+      {
+        "comment": "",
+        "key": "No faults available",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "No repairs available",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 175
+        }
+      },
+      {
+        "comment": "",
+        "key": "No documents available",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 186
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 200
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 207
+        }
+      }
+    ]
+  },
+  "version": 1
+}

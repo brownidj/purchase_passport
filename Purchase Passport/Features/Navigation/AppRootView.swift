@@ -52,6 +52,7 @@ struct AppRootView: View {
     @State private var isShowingDocumentImporter = false
     @State private var operationAlertTitle = "Notice"
     @State private var operationAlertMessage: String?
+    @State private var operationAlertURL: URL?
     @State private var draggedServiceRecordID: PersistentIdentifier?
     @State private var draggedFaultRecordID: PersistentIdentifier?
     @State private var isFaultSectionDropTargeted = false
@@ -174,6 +175,11 @@ struct AppRootView: View {
                     handleDocumentImport(result: result)
                 }
                 .alert(operationAlertTitle, isPresented: operationAlertBinding, actions: {
+                    if let operationAlertURL {
+                        Button("Reveal in Finder") {
+                            NSWorkspace.shared.activateFileViewerSelecting([operationAlertURL])
+                        }
+                    }
                     Button("OK") { operationAlertMessage = nil }
                 }, message: {
                     Text(operationAlertMessage ?? "Unknown error.")
@@ -187,6 +193,7 @@ struct AppRootView: View {
             set: { isPresented in
                 if !isPresented {
                     operationAlertMessage = nil
+                    operationAlertURL = nil
                 }
             }
         )
@@ -1126,15 +1133,17 @@ struct AppRootView: View {
 
         do {
             let url = try AppRootWorkflowCoordinator.exportPurchaseReport(selectedPurchase)
-            operationAlertTitle = "Report Exported"
-            operationAlertMessage = "Saved to \(url.path)"
+            presentOperationResult(
+                title: "Report Exported",
+                message: "Saved purchase report.",
+                url: url
+            )
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Export Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Export Error", message: error.localizedDescription)
         }
     }
 
@@ -1143,15 +1152,17 @@ struct AppRootView: View {
 
         do {
             let url = try AppRootWorkflowCoordinator.exportPurchasePDFReport(selectedPurchase)
-            operationAlertTitle = "PDF Report Exported"
-            operationAlertMessage = "Saved to \(url.path)"
+            presentOperationResult(
+                title: "PDF Report Exported",
+                message: "Saved PDF purchase report.",
+                url: url
+            )
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Export Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Export Error", message: error.localizedDescription)
         }
     }
 
@@ -1161,19 +1172,25 @@ struct AppRootView: View {
         do {
             let url = try AppRootWorkflowCoordinator.exportPurchaseArchive(selectedPurchase)
             let validationIssues = AppRootWorkflowCoordinator.validatePurchaseArchive(at: url)
-            operationAlertTitle = validationIssues.isEmpty ? "Archive Exported" : "Archive Exported With Issues"
             if validationIssues.isEmpty {
-                operationAlertMessage = "Saved to \(url.path)"
+                presentOperationResult(
+                    title: "Archive Exported",
+                    message: "Archive export completed and validation passed.",
+                    url: url
+                )
             } else {
-                operationAlertMessage = "Saved to \(url.path)\n\n\(validationIssues.joined(separator: "\n"))"
+                presentOperationResult(
+                    title: "Archive Exported With Issues",
+                    message: "Validation found \(validationIssues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(validationIssues))",
+                    url: url
+                )
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Export Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Export Error", message: error.localizedDescription)
         }
     }
 
@@ -1181,19 +1198,25 @@ struct AppRootView: View {
         do {
             let url = try AppRootWorkflowCoordinator.exportFullBackup(purchases: purchases)
             let validationIssues = AppRootWorkflowCoordinator.validateBackup(at: url)
-            operationAlertTitle = validationIssues.isEmpty ? "Backup Exported" : "Backup Exported With Issues"
             if validationIssues.isEmpty {
-                operationAlertMessage = "Saved to \(url.path)"
+                presentOperationResult(
+                    title: "Backup Exported",
+                    message: "Backup export completed and validation passed.",
+                    url: url
+                )
             } else {
-                operationAlertMessage = "Saved to \(url.path)\n\n\(validationIssues.joined(separator: "\n"))"
+                presentOperationResult(
+                    title: "Backup Exported With Issues",
+                    message: "Validation found \(validationIssues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(validationIssues))",
+                    url: url
+                )
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Backup Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Backup Error", message: error.localizedDescription)
         }
     }
 
@@ -1212,23 +1235,22 @@ struct AppRootView: View {
             try modelContext.save()
             selectedSection = .allPurchases
             selectedPurchase = importedPurchase
-            operationAlertTitle = "Archive Imported"
+            var message: String
             if renames.isEmpty {
-                operationAlertMessage = "Imported purchase: \(importedPurchase.name)"
+                message = "Imported purchase: \(importedPurchase.name)"
             } else {
-                operationAlertMessage = "Imported purchase: \(importedPurchase.name)\n\nName adjusted to avoid a duplicate."
+                message = "Imported purchase: \(importedPurchase.name)\n\nName adjusted to avoid a duplicate."
             }
             if !documentIdentifierResolutions.isEmpty {
-                operationAlertMessage = (operationAlertMessage ?? "")
-                    + "\n\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
+                message += "\n\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
             }
+            presentOperationResult(title: "Archive Imported", message: message)
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Import Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Import Error", message: error.localizedDescription)
         }
     }
 
@@ -1251,23 +1273,22 @@ struct AppRootView: View {
             if let firstPurchase = restoredPurchases.first {
                 selectedPurchase = firstPurchase
             }
-            operationAlertTitle = "Backup Restored"
+            var message: String
             if renames.isEmpty {
-                operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s)."
+                message = "Imported \(restoredPurchases.count) purchase(s)."
             } else {
-                operationAlertMessage = "Imported \(restoredPurchases.count) purchase(s).\nRenamed \(renames.count) purchase(s) to avoid duplicates."
+                message = "Imported \(restoredPurchases.count) purchase(s).\nRenamed \(renames.count) purchase(s) to avoid duplicates."
             }
             if !documentIdentifierResolutions.isEmpty {
-                operationAlertMessage = (operationAlertMessage ?? "")
-                    + "\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
+                message += "\nAdjusted \(documentIdentifierResolutions.count) document identifier(s) to avoid conflicts."
             }
+            presentOperationResult(title: "Backup Restored", message: message)
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Restore Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Restore Error", message: error.localizedDescription)
         }
     }
 
@@ -1275,19 +1296,24 @@ struct AppRootView: View {
         do {
             let result = try AppRootWorkflowCoordinator.validateSelectedPurchaseArchive()
             if result.issues.isEmpty {
-                operationAlertTitle = "Archive Validation Passed"
-                operationAlertMessage = "No validation issues found.\n\n\(result.url.path)"
+                presentOperationResult(
+                    title: "Archive Validation Passed",
+                    message: "No validation issues found.",
+                    url: result.url
+                )
             } else {
-                operationAlertTitle = "Archive Validation Issues"
-                operationAlertMessage = "Found \(result.issues.count) issue(s).\n\n\(result.issues.joined(separator: "\n"))"
+                presentOperationResult(
+                    title: "Archive Validation Issues",
+                    message: "Found \(result.issues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(result.issues))",
+                    url: result.url
+                )
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Validation Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Validation Error", message: error.localizedDescription)
         }
     }
 
@@ -1295,20 +1321,31 @@ struct AppRootView: View {
         do {
             let result = try AppRootWorkflowCoordinator.validateSelectedBackup()
             if result.issues.isEmpty {
-                operationAlertTitle = "Backup Validation Passed"
-                operationAlertMessage = "No validation issues found.\n\n\(result.url.path)"
+                presentOperationResult(
+                    title: "Backup Validation Passed",
+                    message: "No validation issues found.",
+                    url: result.url
+                )
             } else {
-                operationAlertTitle = "Backup Validation Issues"
-                operationAlertMessage = "Found \(result.issues.count) issue(s).\n\n\(result.issues.joined(separator: "\n"))"
+                presentOperationResult(
+                    title: "Backup Validation Issues",
+                    message: "Found \(result.issues.count) issue(s).\n\n\(AppRootFormatting.validationIssueSummary(result.issues))",
+                    url: result.url
+                )
             }
         } catch {
             if let workflowError = error as? AppRootWorkflowCoordinator.ExportWorkflowError,
                workflowError == .cancelled {
                 return
             }
-            operationAlertTitle = "Validation Error"
-            operationAlertMessage = error.localizedDescription
+            presentOperationResult(title: "Validation Error", message: error.localizedDescription)
         }
+    }
+
+    private func presentOperationResult(title: String, message: String, url: URL? = nil) {
+        operationAlertTitle = title
+        operationAlertMessage = message
+        operationAlertURL = url
     }
 }
 

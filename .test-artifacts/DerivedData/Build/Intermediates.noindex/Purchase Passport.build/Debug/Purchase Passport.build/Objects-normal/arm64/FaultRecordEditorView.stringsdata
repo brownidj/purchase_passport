@@ -1,0 +1,120 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Servicing/FaultRecordEditorView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Core",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Details",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "First Noticed",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fault Title",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Severity",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Description",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Diagnostic Information",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Effect On Use",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "Safety Concerns",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seller or Manufacturer Notified",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 103
+        }
+      }
+    ]
+  },
+  "version": 1
+}

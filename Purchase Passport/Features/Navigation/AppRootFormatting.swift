@@ -1,6 +1,8 @@
 import Foundation
 
 enum AppRootFormatting {
+    private static let defaultIssuePreviewLimit = 8
+
     static func formattedDate(_ value: Date?) -> String {
         guard let value else { return "Not set" }
         return value.formatted(date: .abbreviated, time: .omitted)
@@ -128,5 +130,17 @@ enum AppRootFormatting {
         guard let value else { return nil }
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
+    }
+
+    static func validationIssueSummary(_ issues: [String], maxItems: Int = defaultIssuePreviewLimit) -> String {
+        guard !issues.isEmpty else { return "No validation issues found." }
+
+        let preview = issues.prefix(maxItems)
+        let lines = preview.map { "• \($0)" }
+        let hiddenCount = issues.count - preview.count
+        if hiddenCount > 0 {
+            return (lines + ["• …and \(hiddenCount) more issue(s)."]).joined(separator: "\n")
+        }
+        return lines.joined(separator: "\n")
     }
 }

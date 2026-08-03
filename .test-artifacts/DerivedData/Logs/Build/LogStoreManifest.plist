@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>12</integer>
+	<key>logs</key>
+	<dict>
+		<key>CDCCE00A-407D-4DB2-8D2E-E2CAC4145789</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>CDCCE00A-407D-4DB2-8D2E-E2CAC4145789.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>E</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>1</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>Purchase Passport project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>Purchase Passport</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Testing project Purchase Passport with scheme Purchase Passport</string>
+			<key>timeStartedRecording</key>
+			<real>807408407.28164005</real>
+			<key>timeStoppedRecording</key>
+			<real>807408416.19058096</real>
+			<key>title</key>
+			<string>Testing project Purchase Passport with scheme Purchase Passport</string>
+			<key>uniqueIdentifier</key>
+			<string>CDCCE00A-407D-4DB2-8D2E-E2CAC4145789</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

@@ -1,0 +1,72 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildAndRun"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "588bc1d56c3257bb12835ae875ab8401cf1266c24f1c9fff9f6d365dc7f16863"
+    },
+    {
+      "guid" : "588bc1d56c3257bb12835ae875ab8401f7491e71ca3f6daa6f5ed64dcd996308"
+    },
+    {
+      "guid" : "588bc1d56c3257bb12835ae875ab84012f209010c34281c63c87fd43a5178147"
+    }
+  ],
+  "containerPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "arm64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "hostTargetedPlatform" : null,
+      "platform" : "macosx",
+      "sdk" : "macosx26.5",
+      "sdkVariant" : "macos",
+      "supportedArchitectures" : [
+        "arm64e",
+        "arm64",
+        "x86_64"
+      ],
+      "targetArchitecture" : "arm64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Products",
+      "derivedDataPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "CLANG_COVERAGE_MAPPING" : "YES",
+          "CLANG_PROFILE_DATA_DIRECTORY" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/ProfileData",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES",
+          "ONLY_ACTIVE_ARCH" : "YES"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "test",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

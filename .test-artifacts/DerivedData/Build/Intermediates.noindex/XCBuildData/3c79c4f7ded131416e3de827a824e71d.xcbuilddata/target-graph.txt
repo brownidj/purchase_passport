@@ -1,0 +1,6 @@
+Target dependency graph (3 targets)
+Target 'Purchase PassportTests' in project 'Purchase Passport'
+➜ Explicit dependency on target 'Purchase Passport' in project 'Purchase Passport'
+Target 'Purchase PassportUITests' in project 'Purchase Passport'
+➜ Explicit dependency on target 'Purchase Passport' in project 'Purchase Passport'
+Target 'Purchase Passport' in project 'Purchase Passport' (no dependencies)

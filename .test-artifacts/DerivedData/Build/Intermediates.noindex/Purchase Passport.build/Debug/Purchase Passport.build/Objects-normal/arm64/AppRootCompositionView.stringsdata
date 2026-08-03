@@ -1,0 +1,32 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Navigation/AppRootCompositionView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Purchase Passport",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Section Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Section Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 30
+        }
+      }
+    ]
+  },
+  "version": 1
+}

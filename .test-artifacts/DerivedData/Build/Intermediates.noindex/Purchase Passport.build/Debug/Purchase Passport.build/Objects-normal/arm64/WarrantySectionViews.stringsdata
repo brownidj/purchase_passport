@@ -1,0 +1,184 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Warranties/WarrantySectionViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Warranties",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add a warranty from a purchase detail view.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Warranties",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 14
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Warranty",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select a warranty to view details.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Warranty Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dates",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Claim",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 51
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 52
+        }
+      },
+      {
+        "comment": "",
+        "key": "Provider",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "End Date",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reference",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "Claim Procedure",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Proof Of Purchase",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coverage",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 71
+        }
+      }
+    ]
+  },
+  "version": 1
+}

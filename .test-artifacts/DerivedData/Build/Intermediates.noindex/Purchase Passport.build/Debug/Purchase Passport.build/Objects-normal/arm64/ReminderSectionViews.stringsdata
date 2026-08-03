@@ -1,0 +1,176 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Reminders/ReminderSectionViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Reminders",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add a reminder from a purchase detail view.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 17
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Reminders",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Reminder",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select a reminder to view details.",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Reminder Selected",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tracking",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Type",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Due",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Priority",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recurrence",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Advance Warning",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "State",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completed",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Due",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notes",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 73
+        }
+      }
+    ]
+  },
+  "version": 1
+}

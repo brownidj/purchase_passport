@@ -1,0 +1,392 @@
+{
+  "source": "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase Passport/Features/Dashboard/DashboardViews.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Dashboard",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Overview",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "Quick Navigation",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Total Purchases",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 22
+        }
+      },
+      {
+        "comment": "",
+        "key": "Upcoming Reminders",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "Warranties Near Expiry",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 24
+        }
+      },
+      {
+        "comment": "",
+        "key": "Overdue Follow-ups",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 25
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unresolved Faults",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Active Repairs",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "Active Complaints",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 28
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Purchases",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Reminders",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Warranties",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Servicing",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Interactions",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open Complaints",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Actionable Overview",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent Purchases",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Upcoming Reminders",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Warranties Nearing Expiry",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 114
+        }
+      },
+      {
+        "comment": "",
+        "key": "Overdue Follow-ups",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Service Due Dates",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 156
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unresolved Faults",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "Active Repairs",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "Active Complaints",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 219
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent Interactions",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 240
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recently Added Documents",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 261
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent Activity",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 282
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recent purchases",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "No upcoming reminders",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "No warranties nearing expiry",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ends: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "No overdue follow-ups",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "No service due dates in the next 30 days",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next service: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 167
+        }
+      },
+      {
+        "comment": "",
+        "key": "No unresolved faults",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 179
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 188
+        }
+      },
+      {
+        "comment": "",
+        "key": "No active repairs",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 200
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow-up required: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "No active complaints",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 221
+        }
+      },
+      {
+        "comment": "",
+        "key": "Status: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 230
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recent interactions",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 242
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recent documents",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 263
+        }
+      },
+      {
+        "comment": "",
+        "key": "Added: %@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 272
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recent activity",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 284
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ • %@ • %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 290
+        }
+      }
+    ]
+  },
+  "version": 1
+}

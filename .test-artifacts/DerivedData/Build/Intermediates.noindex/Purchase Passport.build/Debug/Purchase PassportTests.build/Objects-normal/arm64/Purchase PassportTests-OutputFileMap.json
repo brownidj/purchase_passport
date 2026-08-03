@@ -1,0 +1,19 @@
+{
+  "" : {
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase PassportTests-primary.dia",
+    "emit-module-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase PassportTests-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase PassportTests-primary-emit-module.dia",
+    "pch" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase PassportTests-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase PassportTests-primary.swiftdeps"
+  },
+  "/Users/david/Desktop/Swift Projects/Purchase Passport/Purchase PassportTests/Purchase_PassportTests.swift" : {
+    "const-values" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.swiftconstvalues",
+    "dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.d",
+    "diagnostics" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.dia",
+    "index-unit-output-path" : "/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.o",
+    "llvm-bc" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.bc",
+    "object" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.o",
+    "swift-dependencies" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests.swiftdeps",
+    "swiftmodule" : "/Users/david/Desktop/Swift Projects/Purchase Passport/.test-artifacts/DerivedData/Build/Intermediates.noindex/Purchase Passport.build/Debug/Purchase PassportTests.build/Objects-normal/arm64/Purchase_PassportTests~partial.swiftmodule"
+  }
+}
