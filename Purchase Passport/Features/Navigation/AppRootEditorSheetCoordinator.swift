@@ -100,6 +100,9 @@ enum AppRootEditorSheetCoordinator {
         case .new(let purchase):
             InteractionEditorView(mode: .create(purchase: purchase), onCommit: onSave)
                 .frame(minWidth: 700, minHeight: 620)
+        case .draft(let purchase, let draft):
+            InteractionEditorView(mode: .createDraft(purchase: purchase, draft: draft), onCommit: onSave)
+                .frame(minWidth: 700, minHeight: 700)
         case .edit(let interaction):
             InteractionEditorView(mode: .edit(interaction), onCommit: onSave)
                 .frame(minWidth: 700, minHeight: 620)
@@ -118,6 +121,21 @@ enum AppRootEditorSheetCoordinator {
         case .edit(let complaint):
             ComplaintCaseEditorView(mode: .edit(complaint), onCommit: onSave)
                 .frame(minWidth: 760, minHeight: 760)
+        }
+    }
+
+    @ViewBuilder
+    static func providerEditorSheet(
+        _ presentation: ProviderEditorPresentation,
+        onSave: @escaping (Organisation) -> Void
+    ) -> some View {
+        switch presentation {
+        case .new:
+            ProviderEditorView(mode: .create, onCommit: onSave)
+                .frame(minWidth: 760, minHeight: 700)
+        case .edit(let provider):
+            ProviderEditorView(mode: .edit(provider), onCommit: onSave)
+                .frame(minWidth: 760, minHeight: 700)
         }
     }
 }

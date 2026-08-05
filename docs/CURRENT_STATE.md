@@ -42,8 +42,18 @@ At this stage, the source of truth is documentation:
 - [Implementation Plan](IMPLEMENTATION_PLAN.md)
 - [Coding Standards](CODING_STANDARDS.md)
 - [Testing Strategy](TESTING_STRATEGY.md)
+- [Mail Integration Roadmap](Purchase_Passport_Mail_Integration_Roadmap.md)
 
 Until a phase is explicitly requested, no new feature should be implemented.
+The user has explicitly requested Mail Integration Roadmap Phase 7 (Communication Intelligence) on August 4, 2026, and implementation is in progress.
+
+Current Phase 7 implementation status (as of August 5, 2026):
+
+- `Purchase_Passport_Mail_Integration_Roadmap.md` is present in `docs/`.
+- Correspondence intelligence domain model and review status workflow are implemented.
+- Provider correspondence matching supports provider-level and contact-level email address matching.
+- Provider detail includes Mail-linked correspondence visibility and deep-link opening in Mail.
+- Provider detail includes a provider-specific Mail scan/import action with duplicate detection.
 
 ---
 

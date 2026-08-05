@@ -3,6 +3,7 @@ import SwiftData
 
 struct PurchaseDetailSectionView: View {
     let purchase: Purchase?
+    let correspondences: [CorrespondenceRecord]
 
     @Binding var timelineFilter: TimelineFilter
 
@@ -14,6 +15,7 @@ struct PurchaseDetailSectionView: View {
     let selectedFaultRecord: FaultRecord?
     let selectedRepairRecord: RepairRecord?
     let selectedDocument: StoredDocument?
+    let selectedCorrespondence: CorrespondenceRecord?
 
     let formattedDate: (Date?) -> String
     let formattedDateTime: (Date?, Bool) -> String
@@ -23,6 +25,7 @@ struct PurchaseDetailSectionView: View {
     let formattedWarrantySubtitle: (Warranty) -> String
     let formattedReminderSubtitle: (Reminder) -> String
     let formattedInteractionSubtitle: (Interaction) -> String
+    let formattedCorrespondenceSubtitle: (CorrespondenceRecord) -> String
     let formattedComplaintSubtitle: (ComplaintCase) -> String
     let formattedServiceSubtitle: (ServiceRecord) -> String
     let formattedFaultSubtitle: (FaultRecord) -> String
@@ -31,9 +34,13 @@ struct PurchaseDetailSectionView: View {
     let onSelectWarranty: (Warranty) -> Void
     let onSelectReminder: (Reminder) -> Void
     let onAddInteraction: () -> Void
+    let onCallProvider: () -> Void
     let onSelectInteraction: (Interaction) -> Void
     let onAddComplaint: () -> Void
     let onSelectComplaint: (ComplaintCase) -> Void
+    let onSelectCorrespondence: (CorrespondenceRecord) -> Void
+    let onSetCorrespondenceStatus: (CorrespondenceRecord, CorrespondenceReviewStatus) -> Void
+    let onApplyCorrespondenceExtraction: (CorrespondenceRecord) -> Void
     let onAddService: () -> Void
     let onSelectService: (ServiceRecord) -> Void
     let onAddFault: () -> Void
@@ -44,13 +51,21 @@ struct PurchaseDetailSectionView: View {
 
     let onAddWarranty: () -> Void
     let onEditWarranty: () -> Void
+    let onOpenWarrantyEditor: (Warranty) -> Void
     let onAddReminder: () -> Void
     let onEditReminder: () -> Void
+    let onOpenReminderEditor: (Reminder) -> Void
     let onEditInteraction: () -> Void
+    let onOpenInteractionEditor: (Interaction) -> Void
     let onEditComplaint: () -> Void
+    let onOpenComplaintEditor: (ComplaintCase) -> Void
     let onEditService: () -> Void
+    let onOpenServiceEditor: (ServiceRecord) -> Void
     let onEditFault: () -> Void
+    let onOpenFaultEditor: (FaultRecord) -> Void
     let onEditRepair: () -> Void
+    let onOpenRepairEditor: (RepairRecord) -> Void
+    let onOpenProvider: () -> Void
     let onOpenDocument: () -> Void
     let onExportReport: () -> Void
     let onExportPDFReport: () -> Void
@@ -91,6 +106,9 @@ struct PurchaseDetailSectionView: View {
 
                     DisclosureGroup("Details", isExpanded: $isDetailsExpanded) {
                         LabeledContent("Provider", value: purchase.provider?.name ?? "Not set")
+                        if purchase.provider != nil {
+                            Button("Open Provider", action: onOpenProvider)
+                        }
                         LabeledContent("Manufacturer", value: purchase.manufacturer ?? "Not set")
                         LabeledContent("Model", value: purchase.modelName ?? "Not set")
                         LabeledContent("Serial Number", value: purchase.serialNumber ?? "Not set")
@@ -132,6 +150,9 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenWarrantyEditor(warranty)
+                                }
                             }
                         }
                     }
@@ -162,38 +183,38 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenReminderEditor(reminder)
+                                }
                             }
                         }
                     }
 
                     DisclosureGroup("Interactions", isExpanded: $isInteractionsExpanded) {
                         Button("Add Interaction", action: onAddInteraction)
+                        if purchase.provider != nil {
+                            Button("Call Provider", action: onCallProvider)
+                        }
 
-                        if purchase.interactions.isEmpty {
+                        if interactionFeedSections.isEmpty {
                             Text("No interactions attached")
                                 .foregroundStyle(.secondary)
                         } else {
-                            let items = purchase.interactions.sorted(by: { $0.occurredAt > $1.occurredAt })
-                            ForEach(items) { interaction in
-                                Button {
-                                    onSelectInteraction(interaction)
-                                } label: {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(interaction.subject)
-                                                .font(.body)
-                                            Text(formattedInteractionSubtitle(interaction))
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        Spacer()
-                                        if selectedInteraction?.persistentModelID == interaction.persistentModelID {
-                                            Image(systemName: "checkmark")
-                                                .foregroundStyle(.secondary)
-                                        }
+                            ForEach(interactionFeedSections) { section in
+                                Text(section.title)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .textCase(.uppercase)
+                                    .padding(.top, 4)
+
+                                ForEach(section.items) { item in
+                                    switch item {
+                                    case .interaction(let interaction):
+                                        interactionRow(interaction)
+                                    case .correspondence(let correspondence):
+                                        correspondenceRow(correspondence)
                                     }
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                     }
@@ -225,6 +246,9 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenComplaintEditor(complaint)
+                                }
                             }
                         }
                     }
@@ -256,6 +280,9 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenServiceEditor(record)
+                                }
                             }
                         }
                     }
@@ -287,6 +314,9 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenFaultEditor(fault)
+                                }
                             }
                         }
                     }
@@ -318,6 +348,9 @@ struct PurchaseDetailSectionView: View {
                                     }
                                 }
                                 .buttonStyle(.plain)
+                                .onTapGesture(count: 2) {
+                                    onOpenRepairEditor(repair)
+                                }
                             }
                         }
                     }
@@ -392,6 +425,24 @@ struct PurchaseDetailSectionView: View {
                         Button("Edit Interaction", action: onEditInteraction)
                             .disabled(selectedInteraction == nil)
 
+                        Button("Mark Correspondence Accepted") {
+                            guard let selectedCorrespondence else { return }
+                            onSetCorrespondenceStatus(selectedCorrespondence, .accepted)
+                        }
+                        .disabled(selectedCorrespondence == nil)
+
+                        Button("Mark Correspondence Rejected") {
+                            guard let selectedCorrespondence else { return }
+                            onSetCorrespondenceStatus(selectedCorrespondence, .rejected)
+                        }
+                        .disabled(selectedCorrespondence == nil)
+
+                        Button("Apply Extracted Fields") {
+                            guard let selectedCorrespondence else { return }
+                            onApplyCorrespondenceExtraction(selectedCorrespondence)
+                        }
+                        .disabled(!canApplySelectedCorrespondence)
+
                         Button("Edit Complaint Case", action: onEditComplaint)
                             .disabled(selectedComplaint == nil)
 
@@ -419,6 +470,176 @@ struct PurchaseDetailSectionView: View {
                     description: Text("Select a purchase in the list to view details.")
                 )
             }
+        }
+    }
+
+    private var canApplySelectedCorrespondence: Bool {
+        guard let selectedCorrespondence else { return false }
+        return selectedCorrespondence.extractedOrderNumber != nil ||
+            selectedCorrespondence.extractedTrackingNumber != nil ||
+            selectedCorrespondence.extractedRMANumber != nil ||
+            selectedCorrespondence.extractedWarrantyExpiryDate != nil
+    }
+
+    private var interactionFeedItems: [InteractionFeedItem] {
+        let interactionItems = (purchase?.interactions ?? []).map(InteractionFeedItem.interaction)
+        let correspondenceItems = correspondences.map(InteractionFeedItem.correspondence)
+
+        return (interactionItems + correspondenceItems)
+            .sorted(by: { $0.occurredAt > $1.occurredAt })
+    }
+
+    private var interactionFeedSections: [InteractionFeedSection] {
+        let groupedItems = Dictionary(grouping: interactionFeedItems, by: \.category)
+        return InteractionFeedSection.orderedCategories.compactMap { category in
+            guard let items = groupedItems[category], !items.isEmpty else { return nil }
+            return InteractionFeedSection(
+                title: category.title,
+                items: items.sorted(by: { $0.occurredAt > $1.occurredAt })
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func interactionRow(_ interaction: Interaction) -> some View {
+        Button {
+            onSelectInteraction(interaction)
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(interaction.subject)
+                        .font(.body)
+                    Text(formattedInteractionSubtitle(interaction))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                if selectedInteraction?.persistentModelID == interaction.persistentModelID {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .onTapGesture(count: 2) {
+            onOpenInteractionEditor(interaction)
+        }
+    }
+
+    @ViewBuilder
+    private func correspondenceRow(_ correspondence: CorrespondenceRecord) -> some View {
+        Button {
+            onSelectCorrespondence(correspondence)
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(correspondence.subject)
+                        .font(.body)
+                    Text("Email • \(formattedCorrespondenceSubtitle(correspondence))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if correspondence.purchase == nil {
+                        Text("Unlinked provider match")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                if selectedCorrespondence?.persistentModelID == correspondence.persistentModelID {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private enum InteractionFeedItem: Identifiable {
+    case interaction(Interaction)
+    case correspondence(CorrespondenceRecord)
+
+    var id: String {
+        switch self {
+        case .interaction(let interaction):
+            return "interaction-\(interaction.persistentModelID)"
+        case .correspondence(let correspondence):
+            return "correspondence-\(correspondence.persistentModelID)"
+        }
+    }
+
+    var occurredAt: Date {
+        switch self {
+        case .interaction(let interaction):
+            return interaction.occurredAt
+        case .correspondence(let correspondence):
+            return correspondence.occurredAt
+        }
+    }
+
+    var category: InteractionFeedCategory {
+        switch self {
+        case .interaction(let interaction):
+            return .init(type: interaction.type)
+        case .correspondence:
+            return .email
+        }
+    }
+}
+
+private struct InteractionFeedSection: Identifiable {
+    static let orderedCategories = InteractionFeedCategory.allCases
+
+    let title: String
+    let items: [InteractionFeedItem]
+
+    var id: String { title }
+}
+
+private enum InteractionFeedCategory: CaseIterable {
+    case email
+    case phoneCall
+    case letter
+    case onlineChat
+    case inPerson
+    case serviceAppointment
+    case other
+
+    init(type: InteractionType) {
+        switch type {
+        case .email:
+            self = .email
+        case .phoneCall:
+            self = .phoneCall
+        case .letter:
+            self = .letter
+        case .onlineChat:
+            self = .onlineChat
+        case .inPersonVisit:
+            self = .inPerson
+        case .serviceAppointment:
+            self = .serviceAppointment
+        default:
+            self = .other
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .email:
+            return "Emails"
+        case .phoneCall:
+            return "Phone Calls"
+        case .letter:
+            return "Letters"
+        case .onlineChat:
+            return "Online Chat"
+        case .inPerson:
+            return "In-Person"
+        case .serviceAppointment:
+            return "Service Appointments"
+        case .other:
+            return "Other Interactions"
         }
     }
 }

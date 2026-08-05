@@ -1,7 +1,7 @@
 import Foundation
 
 struct BackupService {
-    struct RestoreReport: Equatable {
+    struct RestoreReport {
         let restoredPurchases: [Purchase]
         let issues: [String]
     }

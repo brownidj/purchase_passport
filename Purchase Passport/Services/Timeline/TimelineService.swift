@@ -103,6 +103,16 @@ enum TimelineService {
             ))
         }
 
+        for correspondence in purchase.correspondences {
+            allEntries.append(TimelineEntry(
+                id: "correspondence-\(correspondence.persistentModelID)",
+                date: correspondence.occurredAt,
+                title: "Email Correspondence",
+                details: correspondence.subject,
+                category: .interactions
+            ))
+        }
+
         for service in purchase.serviceRecords {
             guard let serviceDate = service.serviceDate ?? service.completionDate ?? service.bookingDate else { continue }
             allEntries.append(TimelineEntry(
@@ -132,6 +142,26 @@ enum TimelineService {
                 details: repair.diagnosis ?? "Repair",
                 category: .servicing
             ))
+        }
+
+        for complaint in purchase.complaintCases {
+            allEntries.append(TimelineEntry(
+                id: "complaint-open-\(complaint.persistentModelID)",
+                date: complaint.dateOpened,
+                title: "Complaint Opened",
+                details: complaint.title,
+                category: .interactions
+            ))
+
+            if let closedDate = complaint.dateClosed {
+                allEntries.append(TimelineEntry(
+                    id: "complaint-closed-\(complaint.persistentModelID)",
+                    date: closedDate,
+                    title: "Complaint Closed",
+                    details: complaint.title,
+                    category: .interactions
+                ))
+            }
         }
 
         let filtered = allEntries.filter {

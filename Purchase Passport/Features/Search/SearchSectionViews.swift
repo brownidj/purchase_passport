@@ -107,7 +107,7 @@ struct SearchListSectionView: View {
                     description: Text("Adjust your search text or filters.")
                 )
             } else {
-                ForEach(results) { purchase in
+                ForEach(results, id: \.persistentModelID) { purchase in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(purchase.name)
                             .font(.headline)

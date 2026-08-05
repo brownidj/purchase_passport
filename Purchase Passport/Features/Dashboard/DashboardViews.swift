@@ -74,7 +74,7 @@ struct DashboardDetailView: View {
                     Text("No recent purchases")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(recentPurchases) { purchase in
+                    ForEach(recentPurchases, id: \.persistentModelID) { purchase in
                         Button {
                             openPurchase(purchase)
                         } label: {

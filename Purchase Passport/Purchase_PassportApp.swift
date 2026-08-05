@@ -18,6 +18,7 @@ struct Purchase_PassportApp: App {
                 Warranty.self,
                 Reminder.self,
                 Interaction.self,
+                CorrespondenceRecord.self,
                 ComplaintCase.self,
                 ServiceRecord.self,
                 FaultRecord.self,
@@ -25,6 +26,9 @@ struct Purchase_PassportApp: App {
                 AppBootstrapMetadata.self
             )
             try AppBootstrapSeeder.seedIfNeeded(in: sharedModelContainer.mainContext)
+            try CommunicationIntelligenceService.cleanupLegacyGeneratedEmailInteractions(
+                in: sharedModelContainer.mainContext
+            )
         } catch {
             fatalError("Failed to initialize model container: \(error)")
         }
@@ -34,6 +38,12 @@ struct Purchase_PassportApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(sharedModelContainer)
+
+        WindowGroup("Provider Email Import", id: AppWindowID.providerMailImport, for: String.self) { providerName in
+            ProviderMailImportWindow(providerName: providerName.wrappedValue)
+        }
+        .defaultSize(width: 560, height: 420)
         .modelContainer(sharedModelContainer)
     }
 }

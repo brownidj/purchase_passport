@@ -1,6 +1,10 @@
 import SwiftUI
 import SwiftData
 
+enum AppWindowID {
+    static let providerMailImport = "provider-mail-import"
+}
+
 enum PurchaseEditorPresentation: Identifiable {
     case new
     case edit(Purchase)
@@ -85,14 +89,72 @@ enum ReminderEditorPresentation: Identifiable {
     }
 }
 
+struct InteractionDraft: Identifiable {
+    let id: UUID
+    let occurredAt: Date
+    let type: InteractionType
+    let status: InteractionStatus
+    let partyContacted: String
+    let contactPerson: String
+    let contactPhoneNumber: String
+    let subject: String
+    let summary: String
+    let detailedNotes: String
+    let promisesOrCommitments: String
+    let referenceNumber: String
+    let nextAction: String
+    let followUpDate: Date?
+    let durationMinutes: Int?
+    let autoDurationStartDate: Date?
+
+    init(
+        id: UUID = UUID(),
+        occurredAt: Date = .now,
+        type: InteractionType = .phoneCall,
+        status: InteractionStatus = .open,
+        partyContacted: String = "",
+        contactPerson: String = "",
+        contactPhoneNumber: String = "",
+        subject: String = "",
+        summary: String = "",
+        detailedNotes: String = "",
+        promisesOrCommitments: String = "",
+        referenceNumber: String = "",
+        nextAction: String = "",
+        followUpDate: Date? = nil,
+        durationMinutes: Int? = nil,
+        autoDurationStartDate: Date? = nil
+    ) {
+        self.id = id
+        self.occurredAt = occurredAt
+        self.type = type
+        self.status = status
+        self.partyContacted = partyContacted
+        self.contactPerson = contactPerson
+        self.contactPhoneNumber = contactPhoneNumber
+        self.subject = subject
+        self.summary = summary
+        self.detailedNotes = detailedNotes
+        self.promisesOrCommitments = promisesOrCommitments
+        self.referenceNumber = referenceNumber
+        self.nextAction = nextAction
+        self.followUpDate = followUpDate
+        self.durationMinutes = durationMinutes
+        self.autoDurationStartDate = autoDurationStartDate
+    }
+}
+
 enum InteractionEditorPresentation: Identifiable {
     case new(Purchase)
+    case draft(Purchase, InteractionDraft)
     case edit(Interaction)
 
     var id: String {
         switch self {
         case .new(let purchase):
             return "interaction-new-\(purchase.persistentModelID)"
+        case .draft(let purchase, let draft):
+            return "interaction-draft-\(purchase.persistentModelID)-\(draft.id)"
         case .edit(let interaction):
             return "interaction-edit-\(interaction.persistentModelID)"
         }
@@ -117,6 +179,7 @@ enum AppSection: String, CaseIterable, Identifiable {
     case dashboard
     case search
     case allPurchases
+    case providers
     case servicing
     case interactions
     case complaints
@@ -134,6 +197,8 @@ enum AppSection: String, CaseIterable, Identifiable {
             "Search"
         case .allPurchases:
             "All Purchases"
+        case .providers:
+            "Providers"
         case .servicing:
             "Servicing"
         case .interactions:
@@ -157,6 +222,8 @@ enum AppSection: String, CaseIterable, Identifiable {
             "magnifyingglass"
         case .allPurchases:
             "cart"
+        case .providers:
+            "building.2"
         case .servicing:
             "wrench.and.screwdriver"
         case .interactions:
@@ -180,6 +247,8 @@ enum AppSection: String, CaseIterable, Identifiable {
             "Search and filter purchases from a single list."
         case .allPurchases:
             "Purchase list is available in this section."
+        case .providers:
+            "Provider database management is available in this section."
         case .servicing:
             "Service, fault and repair records are available in this section."
         case .interactions:
@@ -203,6 +272,8 @@ enum AppSection: String, CaseIterable, Identifiable {
             "Select a search result to view purchase details."
         case .allPurchases:
             "Select a purchase to view its details."
+        case .providers:
+            "Select a provider to view details."
         case .servicing:
             "Select service, fault, or repair records to view details."
         case .interactions:

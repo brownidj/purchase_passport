@@ -102,6 +102,440 @@ struct Purchase_PassportTests {
         #expect(filtered.first?.title == "Interaction")
     }
 
+    @Test func communicationIntelligenceExtractsOrderTrackingAndRMA() {
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<msg-001@example.com>",
+            threadID: "thread-001",
+            sender: "orders@techworld.example",
+            recipients: ["david@example.com"],
+            subject: "Order update ORD-778899",
+            body: """
+            Thanks for your order.
+            Order Number: ORD-778899
+            Tracking Number: TRK-1234567
+            RMA Number: RMA-2222
+            """,
+            sentAt: .now
+        )
+
+        let result = CommunicationIntelligenceService.importEmail(email, into: [])
+
+        #expect(result.extractedArtifacts.orderNumber == "ORD-778899")
+        #expect(result.extractedArtifacts.trackingNumber == "TRK-1234567")
+        #expect(result.extractedArtifacts.rmaNumber == "RMA-2222")
+        #expect(result.correspondence.channel == .email)
+        #expect(result.correspondence.fullBody?.contains("Tracking Number: TRK-1234567") == true)
+    }
+
+    @Test func communicationIntelligenceAutoLinksWhenSignalsAreStrong() {
+        let provider = Organisation(
+            name: "Tech World Townsville",
+            emailAddress: "sales@techworld.example",
+            website: "https://www.techworld.example"
+        )
+        let purchase = Purchase(
+            name: "AcmeBook Pro 14",
+            orderNumber: "ORD-778899",
+            provider: provider
+        )
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<msg-002@example.com>",
+            threadID: "thread-002",
+            sender: "support@techworld.example",
+            recipients: ["david@example.com"],
+            subject: "AcmeBook Pro 14 - warranty update",
+            body: "Order Number ORD-778899 has now shipped.",
+            sentAt: .now
+        )
+
+        let result = CommunicationIntelligenceService.importEmail(email, into: [purchase])
+
+        #expect(result.linkedPurchase?.persistentModelID == purchase.persistentModelID)
+        #expect(result.correspondence.reviewStatus == .autoLinked)
+        #expect(purchase.correspondences.count == 1)
+    }
+
+    @Test func communicationIntelligenceAutoLinksOutgoingEmailToUniqueProviderPurchase() {
+        let provider = Organisation(
+            name: "Townsville Windows & Screens",
+            emailAddress: "admin@twscreens.com.au",
+            website: "https://www.twscreens.com.au"
+        )
+        let purchase = Purchase(
+            name: "Security Screens",
+            provider: provider
+        )
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<msg-security-screens-002@example.com>",
+            threadID: "thread-security-screens-002",
+            sender: "david@example.com",
+            recipients: ["accounts@twscreens.com.au"],
+            subject: "Screen access concern",
+            body: "Please confirm the next steps for the Townsville Windows & Screens installation.",
+            sentAt: .now
+        )
+
+        let result = CommunicationIntelligenceService.importEmail(email, into: [purchase])
+
+        #expect(result.linkedPurchase?.persistentModelID == purchase.persistentModelID)
+        #expect(result.correspondence.reviewStatus == .autoLinked)
+    }
+
+    @Test func communicationIntelligenceReimportUpdatesExistingCorrespondenceInPlace() {
+        let provider = Organisation(
+            name: "Townsville Windows & Screens",
+            emailAddress: "admin@twscreens.com.au",
+            website: "https://www.twscreens.com.au"
+        )
+        let purchase = Purchase(name: "Security Screens", provider: provider)
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now.addingTimeInterval(-86_400),
+            sender: "david@example.com",
+            recipients: "admin@twscreens.com.au",
+            subject: "Old subject",
+            bodyPreview: "Old preview",
+            fullBody: "Old body",
+            externalMessageID: "<old-message@example.com>"
+        )
+        let originalID = correspondence.persistentModelID
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<new-message@example.com>",
+            threadID: "thread-reimport-001",
+            sender: "david@example.com",
+            recipients: ["accounts@twscreens.com.au"],
+            subject: "Updated screen access complaint",
+            body: "Crimsafe maintenance access remains impossible in the rear bedrooms.",
+            sentAt: .now
+        )
+
+        let result = CommunicationIntelligenceService.importEmail(
+            email,
+            into: [purchase],
+            updating: correspondence
+        )
+
+        #expect(result.correspondence.persistentModelID == originalID)
+        #expect(result.correspondence.subject == "Updated screen access complaint")
+        #expect(result.correspondence.fullBody == "Crimsafe maintenance access remains impossible in the rear bedrooms.")
+        #expect(result.correspondence.externalMessageID == "<new-message@example.com>")
+        #expect(result.linkedPurchase?.persistentModelID == purchase.persistentModelID)
+    }
+
+    @Test func communicationIntelligenceApplyAcceptedExtractionsUpdatesPurchaseAndWarranty() {
+        let purchase = Purchase(name: "Extraction Apply Test", orderNumber: "OLD-123")
+        let warranty = Warranty(title: "Manufacturer", endDate: nil, purchase: purchase)
+        purchase.warranties = [warranty]
+        let extractedDate = Calendar(identifier: .gregorian).date(
+            from: DateComponents(year: 2028, month: 8, day: 2)
+        )!
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now,
+            subject: "Warranty confirmation",
+            extractedOrderNumber: "ORD-NEW-778899",
+            extractedWarrantyExpiryDate: extractedDate,
+            purchase: purchase
+        )
+
+        let result = CommunicationIntelligenceService.applyAcceptedExtractions(from: correspondence)
+
+        #expect(purchase.orderNumber == "ORD-NEW-778899")
+        #expect(warranty.endDate == extractedDate)
+        #expect(correspondence.reviewStatus == .accepted)
+        #expect(result.updatedFields.contains("Order Number"))
+        #expect(result.updatedFields.contains("Warranty Expiry"))
+    }
+
+    @Test func communicationIntelligenceApplyAcceptedExtractionsSkipsWhenNoWarrantyExists() {
+        let purchase = Purchase(name: "Extraction Skip Test")
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now,
+            subject: "Warranty notice",
+            extractedWarrantyExpiryDate: .now,
+            purchase: purchase
+        )
+
+        let result = CommunicationIntelligenceService.applyAcceptedExtractions(from: correspondence)
+        #expect(result.skippedFields.contains("No warranty record available to update."))
+    }
+
+    @Test func providerCorrespondenceServiceMatchesProviderAndContactEmails() {
+        let provider = Organisation(name: "Tech World", emailAddress: "sales@techworld.example")
+        let contact = Contact(
+            name: "Accounts",
+            emailAddress: "accounts@techworld.example",
+            organisation: provider
+        )
+        provider.contacts = [contact]
+
+        let purchase = Purchase(name: "Laptop", provider: provider)
+        let matchBySender = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "sales@techworld.example",
+            subject: "Order update"
+        )
+        let matchByRecipient = CorrespondenceRecord(
+            occurredAt: .now,
+            recipients: "Customer <accounts@techworld.example>",
+            subject: "Invoice copy"
+        )
+        let matchByLinkedPurchase = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "other@example.com",
+            subject: "General note",
+            purchase: purchase
+        )
+        let nonMatch = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "someone@another.example",
+            subject: "Unrelated"
+        )
+
+        let result = ProviderCorrespondenceService.linkedCorrespondences(
+            for: provider,
+            correspondences: [nonMatch, matchBySender, matchByRecipient, matchByLinkedPurchase]
+        )
+
+        #expect(result.count == 3)
+        #expect(result.contains(where: { $0.persistentModelID == matchBySender.persistentModelID }))
+        #expect(result.contains(where: { $0.persistentModelID == matchByRecipient.persistentModelID }))
+        #expect(result.contains(where: { $0.persistentModelID == matchByLinkedPurchase.persistentModelID }))
+    }
+
+    @Test func providerCorrespondenceServiceExtractsEmailDomains() {
+        let provider = Organisation(name: "Townsville Windows", emailAddress: "admin@twscreens.com.au")
+        let contact = Contact(
+            name: "Accounts",
+            emailAddress: "accounts@twscreens.com.au",
+            organisation: provider
+        )
+        let secondContact = Contact(
+            name: "Support",
+            emailAddress: "support@service.example",
+            organisation: provider
+        )
+        provider.contacts = [contact, secondContact]
+
+        let domains = ProviderCorrespondenceService.emailDomains(for: provider)
+
+        #expect(domains.contains("twscreens.com.au"))
+        #expect(domains.contains("service.example"))
+        #expect(domains.count == 2)
+    }
+
+    @Test func providerCorrespondenceServiceMatchesByWebsiteDomainWhenContactIsMissing() {
+        let provider = Organisation(
+            name: "Townsville Windows & Screens",
+            website: "https://www.twscreens.com.au"
+        )
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<msg-website-001@example.com>",
+            threadID: nil,
+            sender: "windows@twscreens.com.au",
+            recipients: ["david@example.com"],
+            subject: "Installation update",
+            body: "Your install is booked in.",
+            sentAt: .now
+        )
+
+        #expect(ProviderCorrespondenceService.matches(email, provider: provider))
+    }
+
+    @Test func providerCorrespondenceServiceMatchesSubdomainRecipientForDraftStyleEmail() {
+        let provider = Organisation(
+            name: "Townsville Windows & Screens",
+            emailAddress: "admin@twscreens.com.au"
+        )
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: nil,
+            threadID: nil,
+            sender: "david@example.com",
+            recipients: ["quotes@north.twscreens.com.au"],
+            subject: "Draft quote request",
+            body: "Please confirm the revised scope.",
+            sentAt: .now
+        )
+
+        #expect(ProviderCorrespondenceService.matches(email, provider: provider))
+    }
+
+    @Test func providerCorrespondenceServiceMatchesSelectedEmailToProviderByDomain() {
+        let provider = Organisation(name: "Townsville Windows & Screens", emailAddress: "admin@twscreens.com.au")
+        let email = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: "<msg-003@example.com>",
+            threadID: nil,
+            sender: "windows@twscreens.com.au",
+            recipients: ["david@example.com"],
+            subject: "Quote follow-up",
+            body: "Thanks for contacting Townsville Windows & Screens.",
+            sentAt: .now
+        )
+
+        #expect(ProviderCorrespondenceService.matches(email, provider: provider))
+    }
+
+    @Test func communicationIntelligenceParsesEmailFile() throws {
+        let emailFileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("eml")
+        let rawMessage = """
+        From: windows@twscreens.com.au
+        To: david@example.com
+        Cc: quotes@north.twscreens.com.au
+        Bcc: archive@twscreens.com.au
+        Subject: Quote follow-up
+        Date: Tue, 24 Dec 2024 10:15:00 +1000
+        Message-ID: <msg-quote-001@twscreens.com.au>
+
+        Hello David,
+        Here is the follow-up quote.
+        """
+        try rawMessage.write(to: emailFileURL, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: emailFileURL) }
+
+        let envelope = try CommunicationIntelligenceService.parseEmailFile(at: emailFileURL)
+
+        #expect(envelope.sender == "windows@twscreens.com.au")
+        #expect(envelope.recipients.contains("david@example.com"))
+        #expect(envelope.recipients.contains("quotes@north.twscreens.com.au"))
+        #expect(envelope.recipients.contains("archive@twscreens.com.au"))
+        #expect(envelope.subject == "Quote follow-up")
+        #expect(envelope.messageID == "<msg-quote-001@twscreens.com.au>")
+        #expect(envelope.body.contains("follow-up quote"))
+    }
+
+    @Test func providerEmailImportServiceFallbackKeysRejectDuplicateImportedDraft() {
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "david@example.com",
+            recipients: "archive@twscreens.com.au, quotes@north.twscreens.com.au",
+            subject: "Draft quote request",
+            bodyPreview: "Please confirm the revised scope.",
+            threadID: nil
+        )
+        let envelope = CommunicationIntelligenceService.EmailEnvelope(
+            messageID: nil,
+            threadID: nil,
+            sender: "david@example.com",
+            recipients: ["quotes@north.twscreens.com.au", "archive@twscreens.com.au"],
+            subject: "Draft quote request",
+            body: "Please confirm the revised scope.",
+            sentAt: .now
+        )
+
+        #expect(
+            ProviderEmailImportService.correspondenceFallbackKey(correspondence)
+                == ProviderEmailImportService.envelopeFallbackKey(envelope)
+        )
+    }
+
+    @Test func communicationIntelligenceParsesEMLXEmailFile() throws {
+        let emailFileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("emlx")
+        let rawMessage = """
+        From: windows@twscreens.com.au
+        To: david@example.com
+        Subject: Mail drag export
+        Date: Tue, 24 Dec 2024 10:15:00 +1000
+        Message-ID: <msg-quote-002@twscreens.com.au>
+
+        Hello David,
+        This came from a Mail export.
+        """
+        let messageData = rawMessage.data(using: .utf8)!
+        let emlxData = Data("\(messageData.count)\n".utf8)
+            + messageData
+            + Data("\n<plist version=\"1.0\"></plist>".utf8)
+        try emlxData.write(to: emailFileURL)
+        defer { try? FileManager.default.removeItem(at: emailFileURL) }
+
+        let envelope = try CommunicationIntelligenceService.parseEmailFile(at: emailFileURL)
+
+        #expect(envelope.subject == "Mail drag export")
+        #expect(envelope.messageID == "<msg-quote-002@twscreens.com.au>")
+        #expect(envelope.body.contains("Mail export"))
+    }
+
+    @Test func providerCorrespondenceServiceBuildsMailMessageURL() {
+        let url = ProviderCorrespondenceService.mailMessageURL(for: "rma-88421@acme.example")
+        #expect(url?.absoluteString.contains("message://") == true)
+        #expect(url?.absoluteString.contains("%3Crma-88421%40acme.example%3E") == true)
+    }
+
+    @MainActor
+    @Test func communicationIntelligenceCleansUpLegacyGeneratedEmailInteractions() throws {
+        let container = try makeTestModelContainer()
+        let modelContext = container.mainContext
+        let occurredAt = Calendar(identifier: .gregorian).date(
+            from: DateComponents(year: 2024, month: 12, day: 24, hour: 10, minute: 15)
+        )!
+
+        let purchase = Purchase(name: "Security Screens", status: .active)
+        let correspondence = CorrespondenceRecord(
+            occurredAt: occurredAt,
+            sender: "admin@twscreens.com.au",
+            recipients: "david@example.com",
+            subject: "Warranty update",
+            bodyPreview: "Crimsafe confirmed the next inspection step.",
+            externalMessageID: "<security-screens-001@twscreens.com.au>",
+            reviewStatus: .accepted,
+            extractedRMANumber: "RMA-4455",
+            purchase: purchase
+        )
+        let interaction = Interaction(
+            occurredAt: occurredAt,
+            type: .email,
+            status: .resolved,
+            subject: "Warranty update",
+            summary: "Crimsafe confirmed the next inspection step.",
+            referenceNumber: "RMA-4455",
+            purchase: purchase,
+            sourceCorrespondence: correspondence
+        )
+
+        purchase.correspondences = [correspondence]
+        purchase.interactions = [interaction]
+        correspondence.generatedInteraction = interaction
+        modelContext.insert(purchase)
+        modelContext.insert(correspondence)
+        modelContext.insert(interaction)
+
+        try CommunicationIntelligenceService.cleanupLegacyGeneratedEmailInteractions(in: modelContext)
+
+        let remainingInteractions = try modelContext.fetch(FetchDescriptor<Interaction>())
+        #expect(purchase.interactions.isEmpty)
+        #expect(correspondence.generatedInteraction == nil)
+        #expect(remainingInteractions.isEmpty)
+    }
+
+    @Test func timelineServiceIncludesCorrespondenceAndComplaintEvents() {
+        let purchase = Purchase(name: "Timeline Test")
+        let correspondenceDate = Calendar(identifier: .gregorian).date(
+            from: DateComponents(year: 2026, month: 8, day: 6)
+        )!
+        let complaintDate = Calendar(identifier: .gregorian).date(
+            from: DateComponents(year: 2026, month: 8, day: 7)
+        )!
+
+        let correspondence = CorrespondenceRecord(
+            occurredAt: correspondenceDate,
+            subject: "Delivery delay acknowledgement",
+            purchase: purchase
+        )
+        let complaint = ComplaintCase(
+            title: "Delayed delivery",
+            dateOpened: complaintDate,
+            purchase: purchase
+        )
+
+        purchase.correspondences = [correspondence]
+        purchase.complaintCases = [complaint]
+
+        let entries = TimelineService.entries(for: purchase, filter: .interactions)
+        #expect(entries.contains(where: { $0.title == "Email Correspondence" }))
+        #expect(entries.contains(where: { $0.title == "Complaint Opened" }))
+    }
+
     @Test func repairCostServiceCalculatesTotalFromLabourAndParts() {
         let total = RepairCostService.calculateTotal(labour: Decimal(string: "120.50"), parts: Decimal(string: "80.25"))
         #expect(total == Decimal(string: "200.75"))
@@ -271,6 +705,7 @@ struct Purchase_PassportTests {
     @Test func appRootSelectionApplySectionChangeTriggersExpectedActions() {
         var clearPurchaseAndDocumentCalls = 0
         var autoselectPurchaseCalls = 0
+        var autoselectProvidersCalls = 0
         var autoselectSearchCalls = 0
         var autoselectServicingCalls = 0
         var autoselectInteractionsCalls = 0
@@ -283,6 +718,7 @@ struct Purchase_PassportTests {
             .servicing,
             clearPurchaseAndDocument: { clearPurchaseAndDocumentCalls += 1 },
             autoselectPurchase: { autoselectPurchaseCalls += 1 },
+            autoselectProviders: { autoselectProvidersCalls += 1 },
             autoselectSearch: { autoselectSearchCalls += 1 },
             autoselectServicing: { autoselectServicingCalls += 1 },
             autoselectInteractions: { autoselectInteractionsCalls += 1 },
@@ -295,6 +731,7 @@ struct Purchase_PassportTests {
         #expect(clearPurchaseAndDocumentCalls == 1)
         #expect(autoselectServicingCalls == 1)
         #expect(autoselectPurchaseCalls == 0)
+        #expect(autoselectProvidersCalls == 0)
         #expect(autoselectSearchCalls == 0)
         #expect(autoselectInteractionsCalls == 0)
         #expect(autoselectComplaintsCalls == 0)
@@ -429,6 +866,33 @@ struct Purchase_PassportTests {
 
         #expect(results.count == 1)
         #expect(results.first?.name == "AcmeBook Pro 14")
+    }
+
+    @Test func purchaseSearchServiceMatchesCorrespondenceFullBody() {
+        let purchase = Purchase(name: "Security Screens")
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "david@example.com",
+            recipients: "accounts@twscreens.com.au",
+            subject: "Maintenance access issue",
+            bodyPreview: "The inaccessible bedroom screens remain a problem.",
+            fullBody: """
+            The inaccessible bedroom screens remain a problem.
+            Crimsafe maintenance requirements cannot be performed on the rear bedrooms.
+            """,
+            purchase: purchase
+        )
+        purchase.correspondences = [correspondence]
+
+        let results = PurchaseSearchService.search(
+            purchases: [purchase],
+            query: "crimsafe rear bedrooms",
+            filters: .default,
+            sortOption: .mostRecent
+        )
+
+        #expect(results.count == 1)
+        #expect(results.first?.name == "Security Screens")
     }
 
     @Test func purchaseSearchServiceAppliesAdvancedFilters() {
@@ -1001,6 +1465,30 @@ struct Purchase_PassportTests {
         #expect(text.contains("Skipped Archives: 1"))
         #expect(text.contains("Restored Purchase"))
         #expect(text.contains("broken.pparchive"))
+    }
+
+    @MainActor
+    private func makeTestModelContainer() throws -> ModelContainer {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        return try ModelContainer(
+            for: Purchase.self,
+            PurchaseCategory.self,
+            FinancialTransaction.self,
+            Tag.self,
+            Contact.self,
+            Organisation.self,
+            StoredDocument.self,
+            Warranty.self,
+            Reminder.self,
+            Interaction.self,
+            CorrespondenceRecord.self,
+            ComplaintCase.self,
+            ServiceRecord.self,
+            FaultRecord.self,
+            RepairRecord.self,
+            AppBootstrapMetadata.self,
+            configurations: configuration
+        )
     }
 
 }

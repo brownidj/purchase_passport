@@ -25,6 +25,7 @@ enum AppRootSelectionCoordinator {
         _ newValue: AppSection?,
         clearPurchaseAndDocument: () -> Void,
         autoselectPurchase: () -> Void,
+        autoselectProviders: () -> Void,
         autoselectSearch: () -> Void,
         autoselectServicing: () -> Void,
         autoselectInteractions: () -> Void,
@@ -41,6 +42,9 @@ enum AppRootSelectionCoordinator {
         case .search:
             clearPurchaseAndDocument()
             autoselectSearch()
+        case .providers:
+            clearPurchaseAndDocument()
+            autoselectProviders()
         case .servicing:
             clearPurchaseAndDocument()
             autoselectServicing()

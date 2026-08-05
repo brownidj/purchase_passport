@@ -49,6 +49,8 @@ final class Purchase {
 
     var interactions: [Interaction]
 
+    var correspondences: [CorrespondenceRecord]
+
     var complaintCases: [ComplaintCase]
 
     var serviceRecords: [ServiceRecord]
@@ -89,6 +91,7 @@ final class Purchase {
         warranties: [Warranty] = [],
         reminders: [Reminder] = [],
         interactions: [Interaction] = [],
+        correspondences: [CorrespondenceRecord] = [],
         complaintCases: [ComplaintCase] = [],
         serviceRecords: [ServiceRecord] = [],
         faultRecords: [FaultRecord] = [],
@@ -125,6 +128,7 @@ final class Purchase {
         self.warranties = warranties
         self.reminders = reminders
         self.interactions = interactions
+        self.correspondences = correspondences
         self.complaintCases = complaintCases
         self.serviceRecords = serviceRecords
         self.faultRecords = faultRecords

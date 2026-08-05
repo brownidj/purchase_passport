@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 
 struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openWindow) private var openWindow
 
     @State private var selectedSection: AppSection? = .dashboard
     @State private var selectedPurchaseID: PersistentIdentifier?
@@ -15,6 +16,7 @@ struct AppRootView: View {
     @State private var selectedReminderID: PersistentIdentifier?
     @State private var selectedInteractionID: PersistentIdentifier?
     @State private var selectedComplaintID: PersistentIdentifier?
+    @State private var selectedProviderID: PersistentIdentifier?
     @State private var lastSelectedPurchaseID: PersistentIdentifier?
     @State private var lastSelectedServiceRecordID: PersistentIdentifier?
     @State private var lastSelectedFaultRecordID: PersistentIdentifier?
@@ -23,6 +25,7 @@ struct AppRootView: View {
     @State private var lastSelectedReminderID: PersistentIdentifier?
     @State private var lastSelectedInteractionID: PersistentIdentifier?
     @State private var lastSelectedComplaintID: PersistentIdentifier?
+    @State private var lastSelectedProviderID: PersistentIdentifier?
     @State private var selectedPurchase: Purchase?
     @State private var selectedServiceRecord: ServiceRecord?
     @State private var selectedFaultRecord: FaultRecord?
@@ -32,6 +35,8 @@ struct AppRootView: View {
     @State private var selectedReminder: Reminder?
     @State private var selectedInteraction: Interaction?
     @State private var selectedComplaint: ComplaintCase?
+    @State private var selectedProvider: Organisation?
+    @State private var selectedCorrespondence: CorrespondenceRecord?
     @State private var timelineFilter: TimelineFilter = .all
     @State private var searchQuery = ""
     @State private var searchFilters = PurchaseSearchFilters.default
@@ -48,12 +53,14 @@ struct AppRootView: View {
     @State private var reminderEditorPresentation: ReminderEditorPresentation?
     @State private var interactionEditorPresentation: InteractionEditorPresentation?
     @State private var complaintEditorPresentation: ComplaintEditorPresentation?
+    @State private var providerEditorPresentation: ProviderEditorPresentation?
 
     @State private var isShowingDocumentImporter = false
     @State private var operationAlertTitle = "Notice"
     @State private var operationAlertMessage: String?
     @State private var operationAlertURL: URL?
     @State private var operationAlertDetails: String?
+    @State private var correspondencePendingApply: CorrespondenceRecord?
     @State private var draggedServiceRecordID: PersistentIdentifier?
     @State private var draggedFaultRecordID: PersistentIdentifier?
     @State private var isFaultSectionDropTargeted = false
@@ -71,6 +78,9 @@ struct AppRootView: View {
     @Query(sort: \Interaction.occurredAt, order: .reverse)
     private var interactions: [Interaction]
 
+    @Query(sort: \CorrespondenceRecord.occurredAt, order: .reverse)
+    private var correspondences: [CorrespondenceRecord]
+
     @Query(sort: \ServiceRecord.updatedAt, order: .reverse)
     private var serviceRecords: [ServiceRecord]
 
@@ -82,6 +92,9 @@ struct AppRootView: View {
 
     @Query(sort: \ComplaintCase.updatedAt, order: .reverse)
     private var complaintCases: [ComplaintCase]
+
+    @Query(sort: \Organisation.name)
+    private var providers: [Organisation]
 
     var body: some View {
         let withSelectionObservers = applyingSelectionObservers(to: compositionView)
@@ -117,6 +130,8 @@ struct AppRootView: View {
         wrapped = applyChange(to: wrapped, of: selectedInteraction) { selectedInteractionID = $0?.persistentModelID }
         wrapped = applyChange(to: wrapped, of: selectedComplaintID, perform: handleComplaintIDChange)
         wrapped = applyChange(to: wrapped, of: selectedComplaint) { selectedComplaintID = $0?.persistentModelID }
+        wrapped = applyChange(to: wrapped, of: selectedProviderID, perform: handleProviderIDChange)
+        wrapped = applyChange(to: wrapped, of: selectedProvider) { selectedProviderID = $0?.persistentModelID }
         wrapped = applyChange(to: wrapped, of: searchQuery) { _ in
             guard selectedSection == .search else { return }
             autoselectSearchPurchase()
@@ -161,6 +176,9 @@ struct AppRootView: View {
         wrapped = applySheet(to: wrapped, item: $complaintEditorPresentation) { presentation in
             AppRootEditorSheetCoordinator.complaintEditorSheet(presentation) { selectedComplaint = $0 }
         }
+        wrapped = applySheet(to: wrapped, item: $providerEditorPresentation) { presentation in
+            AppRootEditorSheetCoordinator.providerEditorSheet(presentation) { selectedProvider = $0 }
+        }
 
         return wrapped
     }
@@ -192,6 +210,20 @@ struct AppRootView: View {
                 }, message: {
                     Text(operationAlertMessage ?? "Unknown error.")
                 })
+                .confirmationDialog(
+                    "Apply Extracted Fields",
+                    isPresented: correspondenceApplyBinding,
+                    titleVisibility: .visible
+                ) {
+                    Button("Apply to Purchase and Warranty") {
+                        applyPendingCorrespondenceExtraction()
+                    }
+                    Button("Cancel", role: .cancel) {
+                        correspondencePendingApply = nil
+                    }
+                } message: {
+                    Text("This will update linked purchase fields using extracted correspondence data.")
+                }
         )
     }
 
@@ -203,6 +235,17 @@ struct AppRootView: View {
                     operationAlertMessage = nil
                     operationAlertURL = nil
                     operationAlertDetails = nil
+                }
+            }
+        )
+    }
+
+    private var correspondenceApplyBinding: Binding<Bool> {
+        Binding(
+            get: { correspondencePendingApply != nil },
+            set: { isPresented in
+                if !isPresented {
+                    correspondencePendingApply = nil
                 }
             }
         )
@@ -234,6 +277,7 @@ struct AppRootView: View {
                 selectedDocument = nil
             },
             autoselectPurchase: autoselectPurchase,
+            autoselectProviders: autoselectProvider,
             autoselectSearch: autoselectSearchPurchase,
             autoselectServicing: {
                 autoselectServiceRecord()
@@ -250,6 +294,7 @@ struct AppRootView: View {
 
     private func clearAllSelections() {
         selectedPurchaseID = nil
+        selectedProviderID = nil
         selectedServiceRecordID = nil
         selectedFaultRecordID = nil
         selectedRepairRecordID = nil
@@ -258,6 +303,7 @@ struct AppRootView: View {
         selectedWarrantyID = nil
         selectedReminderID = nil
         selectedPurchase = nil
+        selectedProvider = nil
         selectedServiceRecord = nil
         selectedFaultRecord = nil
         selectedRepairRecord = nil
@@ -266,6 +312,8 @@ struct AppRootView: View {
         selectedWarranty = nil
         selectedReminder = nil
         selectedDocument = nil
+        selectedCorrespondence = nil
+        correspondencePendingApply = nil
     }
 
     private func handlePurchaseIDChange(_ newValue: PersistentIdentifier?) {
@@ -288,6 +336,7 @@ struct AppRootView: View {
             selectedReminder = nil
             selectedInteraction = nil
             selectedComplaint = nil
+            selectedCorrespondence = nil
             selectedServiceRecordID = nil
             selectedFaultRecordID = nil
             selectedRepairRecordID = nil
@@ -295,6 +344,7 @@ struct AppRootView: View {
             selectedReminderID = nil
             selectedInteractionID = nil
             selectedComplaintID = nil
+            correspondencePendingApply = nil
             return
         }
         let linkedSelections = AppRootSelectionCoordinator.linkedSelections(for: purchase)
@@ -306,6 +356,9 @@ struct AppRootView: View {
         selectedReminder = linkedSelections.reminder
         selectedInteraction = linkedSelections.interaction
         selectedComplaint = linkedSelections.complaint
+        selectedCorrespondence = purchase.correspondences
+            .sorted(by: { $0.occurredAt > $1.occurredAt })
+            .first
         selectedServiceRecordID = linkedSelections.serviceRecordID
         selectedFaultRecordID = linkedSelections.faultRecordID
         selectedRepairRecordID = linkedSelections.repairRecordID
@@ -357,6 +410,12 @@ struct AppRootView: View {
         selectedComplaint = complaintCases.first { $0.persistentModelID == newValue }
     }
 
+    private func handleProviderIDChange(_ newValue: PersistentIdentifier?) {
+        guard let newValue else { selectedProvider = nil; return }
+        lastSelectedProviderID = newValue
+        selectedProvider = providers.first { $0.persistentModelID == newValue }
+    }
+
     private func contentView(for section: AppSection) -> AnyView {
         switch section {
         case .dashboard:
@@ -365,6 +424,8 @@ struct AppRootView: View {
             return AnyView(searchListView)
         case .allPurchases:
             return AnyView(purchaseListView)
+        case .providers:
+            return AnyView(providerListView)
         case .servicing:
             return AnyView(servicingListView)
         case .interactions:
@@ -393,6 +454,8 @@ struct AppRootView: View {
             return AnyView(purchaseDetailView)
         case .allPurchases:
             return AnyView(purchaseDetailView)
+        case .providers:
+            return AnyView(providerDetailView)
         case .servicing:
             return AnyView(servicingDetailView)
         case .interactions:
@@ -560,17 +623,207 @@ struct AppRootView: View {
         )
     }
 
+    private var providerListView: some View {
+        ProviderListSectionView(
+            providers: providers,
+            selectedProvider: selectedProvider,
+            selectedProviderID: $selectedProviderID,
+            linkedPurchaseCount: linkedPurchaseCount(for:),
+            onNewProvider: {
+                providerEditorPresentation = .new
+            },
+            onEditProvider: {
+                guard let selectedProvider else { return }
+                providerEditorPresentation = .edit(selectedProvider)
+            },
+            onDeleteProvider: {
+                deleteSelectedProvider()
+            }
+        )
+    }
+
+    private var providerDetailView: some View {
+        let linkedPurchases = selectedProvider.map(purchasesForProvider(_:)) ?? []
+        let linkedCorrespondences = selectedProvider.map(correspondencesForProvider(_:)) ?? []
+        return ProviderDetailSectionView(
+            provider: selectedProvider,
+            linkedPurchases: linkedPurchases,
+            linkedCorrespondences: linkedCorrespondences,
+            linkedPurchaseCount: linkedPurchases.count,
+            onOpenPurchase: openPurchaseFromProvider,
+            onOpenCorrespondenceInMail: openCorrespondenceInMail,
+            onOpenEmailImport: openEmailImportWindowForSelectedProvider
+        )
+    }
+
     private var interactionListView: some View {
         InteractionListSectionView(
+            providers: providers,
+            purchases: purchases,
             interactions: interactions,
+            correspondences: correspondences,
             selectedInteractionID: $selectedInteractionID,
             selectedInteraction: selectedInteraction,
+            selectedCorrespondence: selectedCorrespondence,
+            selectedPurchase: selectedPurchase,
             formattedDateTime: formattedDateTime,
+            formattedCorrespondenceSubtitle: formattedCorrespondenceSubtitle,
             onEditInteraction: {
                 guard let selectedInteraction else { return }
                 interactionEditorPresentation = .edit(selectedInteraction)
-            }
+            },
+            onSelectCorrespondence: {
+                selectedCorrespondence = $0
+                selectedInteraction = nil
+            },
+            onSetCorrespondenceStatus: setCorrespondenceStatus,
+            onApplyCorrespondenceExtraction: requestApplyCorrespondenceExtraction,
+            onLinkCorrespondenceToPurchase: linkCorrespondenceToPurchase,
+            onOpenLinkedPurchase: openLinkedPurchaseFromCorrespondence,
+            onOpenCorrespondenceInMail: openCorrespondenceInMail,
+            onDeleteSelectedCorrespondence: deleteSelectedCorrespondence
         )
+    }
+
+    private var correspondencesForSelectedPurchase: [CorrespondenceRecord] {
+        guard let selectedPurchase else { return [] }
+        let directlyLinked = correspondences.filter {
+            $0.purchase?.persistentModelID == selectedPurchase.persistentModelID
+        }
+
+        guard let provider = selectedPurchase.provider else {
+            return directlyLinked.sorted(by: { $0.occurredAt > $1.occurredAt })
+        }
+
+        let providerMatchedUnlinked = ProviderCorrespondenceService
+            .linkedCorrespondences(for: provider, correspondences: correspondences)
+            .filter { $0.purchase == nil }
+
+        var seen = Set<PersistentIdentifier>()
+        return (directlyLinked + providerMatchedUnlinked)
+            .filter { seen.insert($0.persistentModelID).inserted }
+            .sorted(by: { $0.occurredAt > $1.occurredAt })
+    }
+
+    private var purchaseDetailCorrespondence: CorrespondenceRecord? {
+        guard let selectedCorrespondence else { return nil }
+        guard correspondencesForSelectedPurchase.contains(where: { $0.persistentModelID == selectedCorrespondence.persistentModelID }) else {
+            return nil
+        }
+        return selectedCorrespondence
+    }
+
+    private func setCorrespondenceStatus(_ correspondence: CorrespondenceRecord, _ status: CorrespondenceReviewStatus) {
+        correspondence.reviewStatus = status
+        correspondence.updatedAt = .now
+        correspondence.purchase?.updatedAt = .now
+        do {
+            try modelContext.save()
+            selectedCorrespondence = correspondence
+        } catch {
+            presentOperationResult(title: "Correspondence Update Error", message: error.localizedDescription)
+        }
+    }
+
+    private func requestApplyCorrespondenceExtraction(_ correspondence: CorrespondenceRecord) {
+        selectedCorrespondence = correspondence
+        correspondencePendingApply = correspondence
+    }
+
+    private func linkCorrespondenceToPurchase(_ correspondence: CorrespondenceRecord, purchase: Purchase) {
+        if selectedPurchase?.persistentModelID != purchase.persistentModelID {
+            selectedPurchase = purchase
+        }
+
+        guard purchases.contains(where: { $0.persistentModelID == purchase.persistentModelID }) else {
+            presentOperationResult(
+                title: "Purchase Not Available",
+                message: "The selected purchase could not be found."
+            )
+            return
+        }
+
+        correspondence.purchase?.correspondences.removeAll {
+            $0.persistentModelID == correspondence.persistentModelID
+        }
+
+        correspondence.purchase = purchase
+        if !purchase.correspondences.contains(where: { $0.persistentModelID == correspondence.persistentModelID }) {
+            purchase.correspondences.append(correspondence)
+        }
+        correspondence.reviewStatus = .accepted
+        correspondence.updatedAt = .now
+        purchase.updatedAt = .now
+
+        do {
+            try modelContext.save()
+            selectedCorrespondence = correspondence
+            presentOperationResult(
+                title: "Email Linked",
+                message: "Linked the imported email to \(purchase.name)."
+            )
+        } catch {
+            presentOperationResult(title: "Link Email Error", message: error.localizedDescription)
+        }
+    }
+
+    private func openLinkedPurchaseFromCorrespondence(_ purchase: Purchase) {
+        selectedPurchase = purchase
+        selectedSection = .allPurchases
+    }
+
+    private func deleteSelectedCorrespondence() {
+        guard let correspondence = selectedCorrespondence else { return }
+
+        if let interaction = correspondence.generatedInteraction {
+            interaction.purchase?.interactions.removeAll {
+                $0.persistentModelID == interaction.persistentModelID
+            }
+            if let followUpReminder = interaction.followUpReminder {
+                modelContext.delete(followUpReminder)
+            }
+            correspondence.generatedInteraction = nil
+            modelContext.delete(interaction)
+        }
+
+        correspondence.purchase?.correspondences.removeAll {
+            $0.persistentModelID == correspondence.persistentModelID
+        }
+        correspondence.purchase?.updatedAt = .now
+
+        selectedCorrespondence = nil
+        modelContext.delete(correspondence)
+
+        do {
+            try modelContext.save()
+            presentOperationResult(
+                title: "Email Deleted",
+                message: "Deleted the imported email and removed its links."
+            )
+        } catch {
+            presentOperationResult(title: "Delete Email Error", message: error.localizedDescription)
+        }
+    }
+
+    private func applyPendingCorrespondenceExtraction() {
+        guard let correspondence = correspondencePendingApply else { return }
+        correspondencePendingApply = nil
+
+        let result = CommunicationIntelligenceService.applyAcceptedExtractions(from: correspondence)
+        do {
+            try modelContext.save()
+            selectedCorrespondence = correspondence
+            var message = "Applied \(result.updatedFields.count) field(s)."
+            if !result.updatedFields.isEmpty {
+                message += "\n\nUpdated:\n• " + result.updatedFields.joined(separator: "\n• ")
+            }
+            if !result.skippedFields.isEmpty {
+                message += "\n\nSkipped:\n• " + result.skippedFields.joined(separator: "\n• ")
+            }
+            presentOperationResult(title: "Extraction Applied", message: message)
+        } catch {
+            presentOperationResult(title: "Apply Extraction Error", message: error.localizedDescription)
+        }
     }
 
     private var complaintListView: some View {
@@ -640,6 +893,7 @@ struct AppRootView: View {
     private var purchaseDetailView: some View {
         PurchaseDetailSectionView(
             purchase: selectedPurchase,
+            correspondences: correspondencesForSelectedPurchase,
             timelineFilter: $timelineFilter,
             selectedWarranty: selectedWarranty,
             selectedReminder: selectedReminder,
@@ -649,6 +903,7 @@ struct AppRootView: View {
             selectedFaultRecord: selectedFaultRecord,
             selectedRepairRecord: selectedRepairRecord,
             selectedDocument: selectedDocument,
+            selectedCorrespondence: purchaseDetailCorrespondence,
             formattedDate: formattedDate,
             formattedDateTime: formattedDateTime,
             formattedPrice: formattedPrice,
@@ -657,6 +912,7 @@ struct AppRootView: View {
             formattedWarrantySubtitle: formattedWarrantySubtitle,
             formattedReminderSubtitle: formattedReminderSubtitle,
             formattedInteractionSubtitle: formattedInteractionSubtitle,
+            formattedCorrespondenceSubtitle: formattedCorrespondenceSubtitle,
             formattedComplaintSubtitle: formattedComplaintSubtitle,
             formattedServiceSubtitle: formattedServiceSubtitle,
             formattedFaultSubtitle: formattedFaultSubtitle,
@@ -667,12 +923,22 @@ struct AppRootView: View {
                 guard let purchase = selectedPurchase else { return }
                 interactionEditorPresentation = .new(purchase)
             },
-            onSelectInteraction: { selectedInteraction = $0 },
+            onCallProvider: startPhoneCallDraftForSelectedPurchase,
+            onSelectInteraction: {
+                selectedInteraction = $0
+                selectedCorrespondence = nil
+            },
             onAddComplaint: {
                 guard let purchase = selectedPurchase else { return }
                 complaintEditorPresentation = .new(purchase)
-            },
+            }, 
             onSelectComplaint: { selectedComplaint = $0 },
+            onSelectCorrespondence: {
+                selectedCorrespondence = $0
+                selectedInteraction = nil
+            },
+            onSetCorrespondenceStatus: setCorrespondenceStatus,
+            onApplyCorrespondenceExtraction: requestApplyCorrespondenceExtraction,
             onAddService: {
                 guard let purchase = selectedPurchase else { return }
                 serviceRecordEditorPresentation = .new(purchase)
@@ -697,6 +963,10 @@ struct AppRootView: View {
                 guard let selectedWarranty else { return }
                 warrantyEditorPresentation = .edit(selectedWarranty)
             },
+            onOpenWarrantyEditor: { warranty in
+                selectedWarranty = warranty
+                warrantyEditorPresentation = .edit(warranty)
+            },
             onAddReminder: {
                 guard let purchase = selectedPurchase else { return }
                 reminderEditorPresentation = .new(purchase)
@@ -705,26 +975,51 @@ struct AppRootView: View {
                 guard let selectedReminder else { return }
                 reminderEditorPresentation = .edit(selectedReminder)
             },
+            onOpenReminderEditor: { reminder in
+                selectedReminder = reminder
+                reminderEditorPresentation = .edit(reminder)
+            },
             onEditInteraction: {
                 guard let selectedInteraction else { return }
                 interactionEditorPresentation = .edit(selectedInteraction)
+            },
+            onOpenInteractionEditor: { interaction in
+                selectedInteraction = interaction
+                interactionEditorPresentation = .edit(interaction)
             },
             onEditComplaint: {
                 guard let selectedComplaint else { return }
                 complaintEditorPresentation = .edit(selectedComplaint)
             },
+            onOpenComplaintEditor: { complaint in
+                selectedComplaint = complaint
+                complaintEditorPresentation = .edit(complaint)
+            },
             onEditService: {
                 guard let selectedServiceRecord else { return }
                 serviceRecordEditorPresentation = .edit(selectedServiceRecord)
+            },
+            onOpenServiceEditor: { serviceRecord in
+                selectedServiceRecord = serviceRecord
+                serviceRecordEditorPresentation = .edit(serviceRecord)
             },
             onEditFault: {
                 guard let selectedFaultRecord else { return }
                 faultRecordEditorPresentation = .edit(selectedFaultRecord)
             },
+            onOpenFaultEditor: { faultRecord in
+                selectedFaultRecord = faultRecord
+                faultRecordEditorPresentation = .edit(faultRecord)
+            },
             onEditRepair: {
                 guard let selectedRepairRecord else { return }
                 repairRecordEditorPresentation = .edit(selectedRepairRecord)
             },
+            onOpenRepairEditor: { repairRecord in
+                selectedRepairRecord = repairRecord
+                repairRecordEditorPresentation = .edit(repairRecord)
+            },
+            onOpenProvider: openProviderFromSelectedPurchase,
             onOpenDocument: openSelectedDocument,
             onExportReport: exportSelectedPurchaseReport,
             onExportPDFReport: exportSelectedPurchasePDFReport,
@@ -955,6 +1250,142 @@ struct AppRootView: View {
         AppRootFormatting.formattedInteractionSubtitle(interaction)
     }
 
+    private func formattedCorrespondenceSubtitle(_ correspondence: CorrespondenceRecord) -> String {
+        AppRootFormatting.formattedCorrespondenceSubtitle(correspondence)
+    }
+
+    private func linkedPurchaseCount(for provider: Organisation) -> Int {
+        purchases.filter { $0.provider?.persistentModelID == provider.persistentModelID }.count
+    }
+
+    private func purchasesForProvider(_ provider: Organisation) -> [Purchase] {
+        purchases
+            .filter { $0.provider?.persistentModelID == provider.persistentModelID }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    private func openPurchaseFromProvider(_ purchase: Purchase) {
+        selectedSection = .allPurchases
+        selectedPurchase = purchase
+    }
+
+    private func correspondencesForProvider(_ provider: Organisation) -> [CorrespondenceRecord] {
+        ProviderCorrespondenceService.linkedCorrespondences(
+            for: provider,
+            correspondences: correspondences
+        )
+    }
+
+    private func openCorrespondenceInMail(_ correspondence: CorrespondenceRecord) {
+        guard let url = ProviderCorrespondenceService.mailMessageURL(for: correspondence.externalMessageID) else {
+            presentOperationResult(
+                title: "Mail Link Unavailable",
+                message: "This correspondence does not contain a valid Mail message identifier."
+            )
+            return
+        }
+
+        let opened = NSWorkspace.shared.open(url)
+        if !opened {
+            presentOperationResult(
+                title: "Open in Mail Failed",
+                message: "Mail could not open the selected message."
+            )
+        }
+    }
+
+    private func openEmailImportWindowForSelectedProvider() {
+        guard let provider = selectedProvider else { return }
+        openWindow(id: AppWindowID.providerMailImport, value: provider.name)
+    }
+
+    private func openProviderFromSelectedPurchase() {
+        guard let provider = selectedPurchase?.provider else { return }
+        selectedProvider = provider
+        selectedSection = .providers
+    }
+
+    private func startPhoneCallDraftForSelectedPurchase() {
+        guard let purchase = selectedPurchase else { return }
+        guard let provider = purchase.provider else {
+            presentOperationResult(
+                title: "Provider Unavailable",
+                message: "Add a provider to this purchase before logging a provider phone call."
+            )
+            return
+        }
+        guard let target = preferredPhoneCallTarget(for: provider) else {
+            presentOperationResult(
+                title: "Phone Number Unavailable",
+                message: "No provider phone number or contact phone number is available for this purchase."
+            )
+            return
+        }
+
+        let draft = InteractionDraft(
+            occurredAt: .now,
+            type: .phoneCall,
+            status: .open,
+            partyContacted: provider.name,
+            contactPerson: target.contactName ?? "",
+            contactPhoneNumber: target.phoneNumber,
+            subject: "Phone call to \(provider.name)",
+            summary: "Dialed \(target.phoneNumber)",
+            autoDurationStartDate: nil
+        )
+        interactionEditorPresentation = .draft(purchase, draft)
+    }
+
+    private func preferredPhoneCallTarget(for provider: Organisation) -> PhoneCallTarget? {
+        if let customerServiceNumber = AppRootFormatting.nonEmpty(provider.customerServiceNumber) {
+            return PhoneCallTarget(phoneNumber: customerServiceNumber, contactName: "Customer Service")
+        }
+        if let phoneNumber = AppRootFormatting.nonEmpty(provider.phoneNumber) {
+            return PhoneCallTarget(phoneNumber: phoneNumber, contactName: nil)
+        }
+
+        let contacts = provider.contacts
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        for contact in contacts {
+            if let phoneNumber = AppRootFormatting.nonEmpty(contact.phoneNumber) {
+                return PhoneCallTarget(phoneNumber: phoneNumber, contactName: contact.name)
+            }
+        }
+
+        return nil
+    }
+
+    private func deleteSelectedProvider() {
+        guard let provider = selectedProvider else { return }
+
+        let linkedPurchases = purchases.filter { $0.provider?.persistentModelID == provider.persistentModelID }
+        for purchase in linkedPurchases {
+            purchase.provider = nil
+            purchase.updatedAt = .now
+        }
+
+        for contact in provider.contacts {
+            contact.organisation = nil
+            if contact.purchases.isEmpty {
+                modelContext.delete(contact)
+            }
+        }
+        provider.contacts.removeAll()
+        modelContext.delete(provider)
+
+        do {
+            try modelContext.save()
+            selectedProvider = nil
+            selectedProviderID = nil
+            presentOperationResult(
+                title: "Provider Deleted",
+                message: "Deleted provider and unlinked \(linkedPurchases.count) purchase(s)."
+            )
+        } catch {
+            presentOperationResult(title: "Provider Delete Error", message: error.localizedDescription)
+        }
+    }
+
     private func formattedComplaintSubtitle(_ complaint: ComplaintCase) -> String {
         AppRootFormatting.formattedComplaintSubtitle(complaint)
     }
@@ -987,6 +1418,8 @@ struct AppRootView: View {
         switch selectedSection {
         case .allPurchases:
             autoselectPurchase()
+        case .providers:
+            autoselectProvider()
         case .search:
             autoselectSearchPurchase()
         case .servicing:
@@ -1076,6 +1509,14 @@ struct AppRootView: View {
             lastSelectedID: lastSelectedComplaintID
         )
         if selectedComplaintID == nil { selectedComplaint = nil }
+    }
+
+    private func autoselectProvider() {
+        selectedProviderID = AppRootWorkflowCoordinator.autoselectID(
+            in: providers,
+            lastSelectedID: lastSelectedProviderID
+        )
+        if selectedProviderID == nil { selectedProvider = nil }
     }
 
     private func handleServiceToFaultDrop() -> Bool {
@@ -1374,6 +1815,11 @@ struct AppRootView: View {
         operationAlertURL = url
         operationAlertDetails = details
     }
+}
+
+private struct PhoneCallTarget {
+    let phoneNumber: String
+    let contactName: String?
 }
 
 #Preview {

@@ -21,6 +21,7 @@ That document defines:
 4. [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)
 5. [docs/CODING_STANDARDS.md](docs/CODING_STANDARDS.md)
 6. [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)
+7. [docs/Purchase_Passport_Mail_Integration_Roadmap.md](docs/Purchase_Passport_Mail_Integration_Roadmap.md)
 
 ## Repository Note
 

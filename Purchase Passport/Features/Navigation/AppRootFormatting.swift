@@ -63,7 +63,28 @@ enum AppRootFormatting {
 
     static func formattedInteractionSubtitle(_ interaction: Interaction) -> String {
         let occurred = formattedDateTime(interaction.occurredAt, includeTime: true)
+        if interaction.type == .phoneCall, let durationMinutes = interaction.durationMinutes {
+            return "\(interaction.type.rawValue) • \(interaction.status.rawValue) • \(occurred) • \(durationMinutes) min"
+        }
         return "\(interaction.type.rawValue) • \(interaction.status.rawValue) • \(occurred)"
+    }
+
+    static func formattedCorrespondenceSubtitle(_ correspondence: CorrespondenceRecord) -> String {
+        let occurred = formattedDateTime(correspondence.occurredAt, includeTime: true)
+        return "\(formattedCorrespondenceStatus(correspondence)) • \(occurred)"
+    }
+
+    static func formattedCorrespondenceStatus(_ correspondence: CorrespondenceRecord) -> String {
+        switch correspondence.reviewStatus {
+        case .pendingReview:
+            return correspondence.purchase == nil ? "Needs linking" : "Needs review"
+        case .autoLinked:
+            return "Linked automatically"
+        case .accepted:
+            return correspondence.purchase == nil ? "Confirmed relevant" : "Linked to purchase"
+        case .rejected:
+            return "Not related"
+        }
     }
 
     static func formattedComplaintSubtitle(_ complaint: ComplaintCase) -> String {

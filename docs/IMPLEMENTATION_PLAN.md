@@ -27,6 +27,17 @@ Before implementing any phase, read:
 - Phase 12 (Task 012 – Export and Backup): in progress (foundation started on August 3, 2026)
 - Phase 13 onward: not started
 
+### Parallel Roadmap – Mail Integration
+
+The dedicated mail integration roadmap is tracked in:
+
+- [Purchase_Passport_Mail_Integration_Roadmap.md](Purchase_Passport_Mail_Integration_Roadmap.md)
+
+Current status:
+
+- Phase 1 through Phase 6: planned
+- Phase 7 (Communication Intelligence): implementation started on August 4, 2026
+
 ## Phase 1 – Project Foundation
 
 Task 001.
