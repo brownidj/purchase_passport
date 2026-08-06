@@ -106,11 +106,10 @@ struct ProviderDetailSectionView: View {
     let onLogPhoneCall: (Purchase, InteractionDraft) -> Void
 
     @State private var isShowingPhoneCallSheet = false
-    @State private var isSummaryExpanded = true
     @State private var isLinkedPurchasesExpanded = true
-    @State private var isPhoneCallsExpanded = true
+    @State private var isPhoneCallsExpanded = false
     @State private var isCalendarExpanded = false
-    @State private var isLinkedEmailsExpanded = true
+    @State private var isLinkedEmailsExpanded = false
     @State private var isContactDetailsExpanded = false
     @State private var isAddressesExpanded = false
     @State private var isNotesExpanded = false
@@ -120,7 +119,7 @@ struct ProviderDetailSectionView: View {
         Group {
             if let provider {
                 List {
-                    collapsibleSection("Summary", isExpanded: $isSummaryExpanded) {
+                    Section("Summary") {
                         LabeledContent("Business Name", value: provider.name)
                     }
 
