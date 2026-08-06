@@ -371,7 +371,7 @@ private struct ProviderCalendarSectionView: View {
                 }
             }
 
-            Button("Open Calendar") {
+            Button("Open Calendar to add Event") {
                 openCalendarApp()
             }
 

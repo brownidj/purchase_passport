@@ -211,10 +211,15 @@ enum ProviderEmailImportService {
 }
 
 extension ProviderEmailImportService {
+    private struct ItemProviderBox: @unchecked Sendable {
+        let value: NSItemProvider
+    }
+
     nonisolated static func loadDroppedEmailFile(
         from itemProvider: NSItemProvider,
         completion: @escaping (Result<URL, Error>) -> Void
     ) {
+        let itemProviderBox = ItemProviderBox(value: itemProvider)
         let suggestedName = itemProvider.suggestedName
 
         if itemProvider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
@@ -228,10 +233,10 @@ extension ProviderEmailImportService {
                     return
                 }
                 if let error {
-                    loadFileOrDataRepresentation(from: itemProvider, completion: completion, fallbackError: error)
+                    loadFileOrDataRepresentation(from: itemProviderBox.value, completion: completion, fallbackError: error)
                     return
                 }
-                loadFileOrDataRepresentation(from: itemProvider, completion: completion, fallbackError: ImportError.unreadableDropPayload)
+                loadFileOrDataRepresentation(from: itemProviderBox.value, completion: completion, fallbackError: ImportError.unreadableDropPayload)
             }
             return
         }
@@ -244,6 +249,7 @@ extension ProviderEmailImportService {
         completion: @escaping (Result<URL, Error>) -> Void,
         fallbackError: Error
     ) {
+        let itemProviderBox = ItemProviderBox(value: itemProvider)
         let suggestedName = itemProvider.suggestedName
         let candidateTypes = supportedContentTypes.filter {
             itemProvider.hasItemConformingToTypeIdentifier($0.identifier)
@@ -260,7 +266,7 @@ extension ProviderEmailImportService {
                 return
             }
 
-            itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, dataError in
+            itemProviderBox.value.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, dataError in
                 guard let data else {
                     completion(.failure(dataError ?? error ?? fallbackError))
                     return
