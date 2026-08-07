@@ -14,6 +14,8 @@ struct InteractionEditorView: View {
 
     private let mode: Mode
     private let onCommit: (Interaction) -> Void
+    private let relatedInteraction: Interaction?
+    private let relatedCorrespondence: CorrespondenceRecord?
 
     @State private var occurredAt: Date
     @State private var type: InteractionType
@@ -30,6 +32,7 @@ struct InteractionEditorView: View {
     @State private var nextAction: String
     @State private var hasFollowUpDate: Bool
     @State private var followUpDate: Date
+    @State private var followUpInteractionType: InteractionType?
     @State private var autoDurationStartDate: Date?
     @State private var validationMessage: String?
 
@@ -39,6 +42,8 @@ struct InteractionEditorView: View {
 
         switch mode {
         case .create:
+            self.relatedInteraction = nil
+            self.relatedCorrespondence = nil
             _occurredAt = State(initialValue: .now)
             _type = State(initialValue: .phoneCall)
             _status = State(initialValue: .open)
@@ -54,8 +59,11 @@ struct InteractionEditorView: View {
             _nextAction = State(initialValue: "")
             _hasFollowUpDate = State(initialValue: false)
             _followUpDate = State(initialValue: .now)
+            _followUpInteractionType = State(initialValue: nil)
             _autoDurationStartDate = State(initialValue: nil)
         case .createDraft(_, let draft):
+            self.relatedInteraction = draft.relatedInteraction
+            self.relatedCorrespondence = draft.relatedCorrespondence
             _occurredAt = State(initialValue: draft.occurredAt)
             _type = State(initialValue: draft.type)
             _status = State(initialValue: draft.status)
@@ -71,8 +79,11 @@ struct InteractionEditorView: View {
             _nextAction = State(initialValue: draft.nextAction)
             _hasFollowUpDate = State(initialValue: draft.followUpDate != nil)
             _followUpDate = State(initialValue: draft.followUpDate ?? .now)
+            _followUpInteractionType = State(initialValue: nil)
             _autoDurationStartDate = State(initialValue: draft.autoDurationStartDate)
         case .edit(let interaction):
+            self.relatedInteraction = interaction.relatedInteraction
+            self.relatedCorrespondence = interaction.relatedCorrespondence
             _occurredAt = State(initialValue: interaction.occurredAt)
             _type = State(initialValue: interaction.type)
             _status = State(initialValue: interaction.status)
@@ -88,6 +99,7 @@ struct InteractionEditorView: View {
             _nextAction = State(initialValue: interaction.nextAction ?? "")
             _hasFollowUpDate = State(initialValue: interaction.followUpDate != nil)
             _followUpDate = State(initialValue: interaction.followUpDate ?? .now)
+            _followUpInteractionType = State(initialValue: interaction.followUpReminder?.followUpInteractionType)
             _autoDurationStartDate = State(initialValue: nil)
         }
     }
@@ -128,16 +140,63 @@ struct InteractionEditorView: View {
                 TextField("Promises Or Commitments", text: $promisesOrCommitments, axis: .vertical)
                     .lineLimit(2, reservesSpace: true)
                 TextField("Duration (minutes)", text: $durationMinutes)
-                TextField("Next Action", text: $nextAction)
                 Toggle("Follow-up Date", isOn: $hasFollowUpDate)
                 if hasFollowUpDate {
                     DatePicker("Follow-up", selection: $followUpDate)
+                    Picker("Follow-up Action", selection: $followUpInteractionType) {
+                        Text("None").tag(Optional<InteractionType>.none)
+                        ForEach(followUpActionTypes, id: \.self) { value in
+                            Text(value.rawValue).tag(Optional(value))
+                        }
+                    }
+                    TextField("Follow-up Notes", text: $nextAction, axis: .vertical)
+                        .lineLimit(3, reservesSpace: true)
+                }
+            }
+
+            if relatedInteraction != nil || relatedCorrespondence != nil {
+                Section("Linked Context") {
+                    if let relatedCorrespondence {
+                        LabeledContent("Linked Email", value: relatedCorrespondence.subject)
+                        LabeledContent(
+                            "Occurred",
+                            value: relatedCorrespondence.occurredAt.formatted(date: .abbreviated, time: .shortened)
+                        )
+                        LabeledContent("From", value: relatedCorrespondence.sender ?? "Not set")
+                        if relatedCorrespondence.externalMessageID != nil {
+                            Button("Open in Mail") {
+                                openRelatedCorrespondenceInMail(relatedCorrespondence)
+                            }
+                        }
+                        if let contextPreview = correspondenceContextPreview {
+                            Text(contextPreview)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if let relatedInteraction {
+                        LabeledContent("Linked Interaction", value: relatedInteraction.subject)
+                        LabeledContent("Type", value: relatedInteraction.type.rawValue)
+                        LabeledContent(
+                            "Occurred",
+                            value: relatedInteraction.occurredAt.formatted(date: .abbreviated, time: .shortened)
+                        )
+                        if let contextSummary = interactionContextSummary {
+                            Text(contextSummary)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
 
             if type == .phoneCall, phoneNumberForDialing != nil {
                 Section("Call") {
                     LabeledContent("Dial Number", value: phoneNumberForDialing ?? "Not set")
+                    Button(autoDurationStartDate == nil ? "Start" : "Restart Start Time") {
+                        startCallTiming()
+                    }
                     Button("Dial Number") {
                         dialPhoneNumber()
                     }
@@ -147,9 +206,27 @@ struct InteractionEditorView: View {
                         }
                         LabeledContent("Call Started", value: formattedCallStartedAt)
                     } else {
-                        Text("Use Dial Number to stamp the call start time and help capture duration.")
+                        Text("Use Start to stamp the call start time, or Dial Number to start the call and stamp the time together.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            if showsInlineActionRow {
+                Section {
+                    HStack {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                        .keyboardShortcut(.cancelAction)
+
+                        Spacer()
+
+                        Button("Save") {
+                            handleSave()
+                        }
+                        .keyboardShortcut(.defaultAction)
                     }
                 }
             }
@@ -184,6 +261,15 @@ struct InteractionEditorView: View {
         }
     }
 
+    private var showsInlineActionRow: Bool {
+        switch mode {
+        case .createDraft, .edit:
+            return true
+        case .create:
+            return false
+        }
+    }
+
     private func handleSave() {
         if let message = InteractionEditorValidation.validate(subject: subject) {
             validationMessage = message
@@ -211,13 +297,16 @@ struct InteractionEditorView: View {
                 nextAction: nextAction.nilIfBlank,
                 followUpDate: hasFollowUpDate ? followUpDate : nil,
                 updatedAt: .now,
-                purchase: purchase
+                purchase: purchase,
+                relatedInteraction: relatedInteraction,
+                relatedCorrespondence: relatedCorrespondence
             )
 
             modelContext.insert(interaction)
             purchase.interactions.append(interaction)
             synchronizeFollowUpReminder(for: interaction, purchase: purchase)
             purchase.updatedAt = .now
+            if !saveModelContext() { return }
             onCommit(interaction)
 
         case .createDraft(let purchase, _):
@@ -237,13 +326,16 @@ struct InteractionEditorView: View {
                 nextAction: nextAction.nilIfBlank,
                 followUpDate: hasFollowUpDate ? followUpDate : nil,
                 updatedAt: .now,
-                purchase: purchase
+                purchase: purchase,
+                relatedInteraction: relatedInteraction,
+                relatedCorrespondence: relatedCorrespondence
             )
 
             modelContext.insert(interaction)
             purchase.interactions.append(interaction)
             synchronizeFollowUpReminder(for: interaction, purchase: purchase)
             purchase.updatedAt = .now
+            if !saveModelContext() { return }
             onCommit(interaction)
 
         case .edit(let interaction):
@@ -263,8 +355,11 @@ struct InteractionEditorView: View {
             interaction.nextAction = nextAction.nilIfBlank
             interaction.followUpDate = hasFollowUpDate ? followUpDate : nil
             interaction.updatedAt = .now
+            interaction.relatedInteraction = relatedInteraction
+            interaction.relatedCorrespondence = relatedCorrespondence
             synchronizeFollowUpReminder(for: interaction, purchase: purchase)
             interaction.purchase?.updatedAt = .now
+            if !saveModelContext() { return }
             onCommit(interaction)
         }
 
@@ -275,9 +370,26 @@ struct InteractionEditorView: View {
         contactPhoneNumber.nilIfBlank
     }
 
+    private var correspondenceContextPreview: String? {
+        let value = relatedCorrespondence?.fullBody?.nilIfBlank ?? relatedCorrespondence?.bodyPreview?.nilIfBlank
+        guard let value else { return nil }
+        return String(value.prefix(500))
+    }
+
+    private var interactionContextSummary: String? {
+        let value = relatedInteraction?.detailedNotes?.nilIfBlank
+            ?? relatedInteraction?.summary?.nilIfBlank
+        guard let value else { return nil }
+        return String(value.prefix(500))
+    }
+
     private var formattedCallStartedAt: String {
         guard let autoDurationStartDate else { return "Not set" }
         return autoDurationStartDate.formatted(date: .abbreviated, time: .shortened)
+    }
+
+    private var followUpActionTypes: [InteractionType] {
+        InteractionType.allCases.filter { $0 != .other }
     }
 
     private func dialPhoneNumber() {
@@ -287,13 +399,28 @@ struct InteractionEditorView: View {
             return
         }
 
+        startCallTiming()
+
+        if !NSWorkspace.shared.open(url) {
+            validationMessage = "The call could not be started from this Mac."
+        }
+    }
+
+    private func startCallTiming() {
         let startDate = Date.now
         occurredAt = startDate
         autoDurationStartDate = startDate
         validationMessage = nil
+    }
 
+    private func openRelatedCorrespondenceInMail(_ correspondence: CorrespondenceRecord) {
+        guard let url = ProviderCorrespondenceService.mailMessageURL(for: correspondence.externalMessageID) else {
+            validationMessage = "This email does not have a Mail link."
+            return
+        }
+        validationMessage = nil
         if !NSWorkspace.shared.open(url) {
-            validationMessage = "The call could not be started from this Mac."
+            validationMessage = "The email could not be opened in Mail."
         }
     }
 
@@ -309,6 +436,17 @@ struct InteractionEditorView: View {
         let sanitized = String(phoneNumber.unicodeScalars.filter { allowedScalars.contains($0) })
         guard !sanitized.isEmpty else { return nil }
         return URL(string: "tel://\(sanitized)")
+    }
+
+    private func saveModelContext() -> Bool {
+        do {
+            try modelContext.save()
+            validationMessage = nil
+            return true
+        } catch {
+            validationMessage = error.localizedDescription
+            return false
+        }
     }
 
     private func synchronizeFollowUpReminder(for interaction: Interaction, purchase: Purchase?) {
@@ -331,6 +469,8 @@ struct InteractionEditorView: View {
                 existingReminder.completedAt = nil
                 existingReminder.updatedAt = .now
                 existingReminder.purchase = purchase
+                existingReminder.sourceInteraction = interaction
+                existingReminder.followUpInteractionType = followUpInteractionType
             } else {
                 let reminder = Reminder(
                     title: reminderTitle,
@@ -341,7 +481,9 @@ struct InteractionEditorView: View {
                     recurrence: .none,
                     priority: .normal,
                     notes: notes,
-                    purchase: purchase
+                    purchase: purchase,
+                    sourceInteraction: interaction,
+                    followUpInteractionType: followUpInteractionType
                 )
                 modelContext.insert(reminder)
                 purchase.reminders.append(reminder)

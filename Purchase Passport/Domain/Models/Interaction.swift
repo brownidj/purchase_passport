@@ -23,6 +23,8 @@ final class Interaction {
     var purchase: Purchase?
     var followUpReminder: Reminder?
     var sourceCorrespondence: CorrespondenceRecord?
+    var relatedInteraction: Interaction?
+    var relatedCorrespondence: CorrespondenceRecord?
 
     init(
         occurredAt: Date,
@@ -43,7 +45,9 @@ final class Interaction {
         createdAt: Date = .now,
         updatedAt: Date = .now,
         purchase: Purchase? = nil,
-        sourceCorrespondence: CorrespondenceRecord? = nil
+        sourceCorrespondence: CorrespondenceRecord? = nil,
+        relatedInteraction: Interaction? = nil,
+        relatedCorrespondence: CorrespondenceRecord? = nil
     ) {
         self.occurredAt = occurredAt
         self.type = type
@@ -64,6 +68,8 @@ final class Interaction {
         self.updatedAt = updatedAt
         self.purchase = purchase
         self.sourceCorrespondence = sourceCorrespondence
+        self.relatedInteraction = relatedInteraction
+        self.relatedCorrespondence = relatedCorrespondence
     }
 }
 

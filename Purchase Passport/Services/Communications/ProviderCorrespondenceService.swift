@@ -89,6 +89,10 @@ enum ProviderCorrespondenceService {
         return values
     }
 
+    static func emailAddresses(in text: String?) -> [String] {
+        Array(extractedEmails(from: text)).sorted()
+    }
+
     static func mailMessageURL(for externalMessageID: String?) -> URL? {
         guard var value = externalMessageID?.trimmingCharacters(in: .whitespacesAndNewlines),
               !value.isEmpty else {

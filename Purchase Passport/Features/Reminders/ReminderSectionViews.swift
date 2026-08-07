@@ -7,6 +7,7 @@ struct ReminderListSectionView: View {
     let selectedReminder: Reminder?
     let formattedDateTime: (Date?, Bool) -> String
     let onEditReminder: () -> Void
+    let onTriggerInteraction: () -> Void
 
     var body: some View {
         Group {
@@ -40,7 +41,15 @@ struct ReminderListSectionView: View {
                 Button("Edit Reminder", action: onEditReminder)
                     .disabled(selectedReminder == nil)
             }
+            ToolbarItem {
+                Button("Trigger Interaction", action: onTriggerInteraction)
+                    .disabled(!canTriggerSelectedReminder)
+            }
         }
+    }
+
+    private var canTriggerSelectedReminder: Bool {
+        selectedReminder?.followUpInteractionType != nil && selectedReminder?.purchase != nil
     }
 }
 
@@ -48,6 +57,7 @@ struct ReminderDetailSectionView: View {
     let reminder: Reminder?
     let formattedDateTime: (Date?, Bool) -> String
     let formattedReminderState: (Reminder) -> String
+    let onTriggerInteraction: (Reminder) -> Void
 
     var body: some View {
         Group {
@@ -67,6 +77,23 @@ struct ReminderDetailSectionView: View {
                         LabeledContent("State", value: formattedReminderState(reminder))
                         LabeledContent("Completed", value: reminder.isCompleted ? "Yes" : "No")
                         LabeledContent("Next Due", value: formattedDateTime(ReminderService.nextDueDate(for: reminder), reminder.hasSpecificTime))
+                    }
+
+                    if reminder.followUpInteractionType != nil || reminder.sourceInteraction != nil {
+                        Section("Follow-up Action") {
+                            LabeledContent(
+                                "Interaction Type",
+                                value: reminder.followUpInteractionType?.rawValue ?? "Not set"
+                            )
+                            LabeledContent(
+                                "Source Interaction",
+                                value: reminder.sourceInteraction?.subject ?? "Not set"
+                            )
+                            Button("Trigger Interaction") {
+                                onTriggerInteraction(reminder)
+                            }
+                            .disabled(reminder.followUpInteractionType == nil || reminder.purchase == nil)
+                        }
                     }
 
                     Section("Notes") {

@@ -52,6 +52,7 @@ struct AppRootView: View {
     @State private var warrantyEditorPresentation: WarrantyEditorPresentation?
     @State private var reminderEditorPresentation: ReminderEditorPresentation?
     @State private var interactionEditorPresentation: InteractionEditorPresentation?
+    @State private var providerEmailComposerPresentation: ProviderEmailComposerPresentation?
     @State private var complaintEditorPresentation: ComplaintEditorPresentation?
     @State private var providerEditorPresentation: ProviderEditorPresentation?
 
@@ -172,6 +173,9 @@ struct AppRootView: View {
         }
         wrapped = applySheet(to: wrapped, item: $interactionEditorPresentation) { presentation in
             AppRootEditorSheetCoordinator.interactionEditorSheet(presentation) { selectedInteraction = $0 }
+        }
+        wrapped = applySheet(to: wrapped, item: $providerEmailComposerPresentation) { presentation in
+            AppRootEditorSheetCoordinator.providerEmailComposerSheet(presentation) { selectedInteraction = $0 }
         }
         wrapped = applySheet(to: wrapped, item: $complaintEditorPresentation) { presentation in
             AppRootEditorSheetCoordinator.complaintEditorSheet(presentation) { selectedComplaint = $0 }
@@ -652,7 +656,10 @@ struct AppRootView: View {
             linkedPurchaseCount: linkedPurchases.count,
             onOpenPurchase: openPurchaseFromProvider,
             onOpenCorrespondenceInMail: openCorrespondenceInMail,
-            onOpenEmailImport: openEmailImportWindowForSelectedProvider
+            onOpenEmailImport: openEmailImportWindowForSelectedProvider,
+            onComposeEmail: startEmailDraftForSelectedProvider,
+            onReplyToCorrespondence: replyToCorrespondenceFromSelectedProvider,
+            onLogPhoneCall: startPhoneCallDraft
         )
     }
 
@@ -886,6 +893,9 @@ struct AppRootView: View {
             onEditReminder: {
                 guard let selectedReminder else { return }
                 reminderEditorPresentation = .edit(selectedReminder)
+            },
+            onTriggerInteraction: {
+                triggerInteractionFromSelectedReminder()
             }
         )
     }
@@ -924,6 +934,7 @@ struct AppRootView: View {
                 interactionEditorPresentation = .new(purchase)
             },
             onCallProvider: startPhoneCallDraftForSelectedPurchase,
+            onEmailProvider: startEmailDraftForSelectedPurchase,
             onSelectInteraction: {
                 selectedInteraction = $0
                 selectedCorrespondence = nil
@@ -1065,7 +1076,8 @@ struct AppRootView: View {
         ReminderDetailSectionView(
             reminder: selectedReminder,
             formattedDateTime: formattedDateTime,
-            formattedReminderState: formattedReminderState
+            formattedReminderState: formattedReminderState,
+            onTriggerInteraction: triggerInteraction
         )
     }
 
@@ -1121,6 +1133,58 @@ struct AppRootView: View {
     private func openReminderFromDashboard(_ reminder: Reminder) {
         selectedSection = .reminders
         selectedReminder = reminder
+    }
+
+    private func triggerInteractionFromSelectedReminder() {
+        guard let selectedReminder else { return }
+        triggerInteraction(from: selectedReminder)
+    }
+
+    private func triggerInteraction(from reminder: Reminder) {
+        guard let purchase = reminder.purchase else {
+            presentOperationResult(
+                title: "Reminder Not Linked",
+                message: "This reminder is not linked to a purchase, so an interaction cannot be created from it."
+            )
+            return
+        }
+
+        guard let interactionType = reminder.followUpInteractionType else {
+            presentOperationResult(
+                title: "No Follow-up Action",
+                message: "This reminder does not have a follow-up interaction type set."
+            )
+            return
+        }
+
+        let sourceInteraction = reminder.sourceInteraction
+        let provider = purchase.provider
+        let sortedProviderContacts = provider?.contacts
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        let contactPhoneNumber =
+            AppRootFormatting.nonEmpty(sourceInteraction?.contactPhoneNumber)
+            ?? AppRootFormatting.nonEmpty(provider?.phoneNumber)
+            ?? AppRootFormatting.nonEmpty(provider?.customerServiceNumber)
+            ?? sortedProviderContacts?.compactMap { AppRootFormatting.nonEmpty($0.phoneNumber) }.first
+
+        let draft = InteractionDraft(
+            occurredAt: .now,
+            type: interactionType,
+            status: .open,
+            partyContacted: sourceInteraction?.partyContacted ?? provider?.name ?? "",
+            contactPerson: sourceInteraction?.contactPerson ?? "",
+            contactPhoneNumber: contactPhoneNumber ?? "",
+            subject: followUpInteractionSubject(for: reminder, type: interactionType),
+            summary: reminder.notes ?? sourceInteraction?.summary ?? "",
+            detailedNotes: sourceInteraction?.detailedNotes ?? "",
+            nextAction: sourceInteraction?.nextAction ?? "",
+            relatedInteraction: sourceInteraction,
+            relatedCorrespondence: sourceInteraction?.relatedCorrespondence
+        )
+
+        selectedPurchase = purchase
+        selectedSection = .allPurchases
+        interactionEditorPresentation = .draft(purchase, draft)
     }
 
     private func openWarrantyFromDashboard(_ warranty: Warranty) {
@@ -1299,6 +1363,16 @@ struct AppRootView: View {
         openWindow(id: AppWindowID.providerMailImport, value: provider.name)
     }
 
+    private func startEmailDraftForSelectedProvider(_ purchase: Purchase? = nil) {
+        guard let provider = selectedProvider else { return }
+        startEmailDraft(for: provider, purchase: purchase)
+    }
+
+    private func replyToCorrespondenceFromSelectedProvider(_ correspondence: CorrespondenceRecord) {
+        guard let provider = selectedProvider else { return }
+        startEmailDraft(for: provider, purchase: correspondence.purchase, replyTo: correspondence)
+    }
+
     private func openProviderFromSelectedPurchase() {
         guard let provider = selectedPurchase?.provider else { return }
         selectedProvider = provider
@@ -1307,6 +1381,43 @@ struct AppRootView: View {
 
     private func startPhoneCallDraftForSelectedPurchase() {
         guard let purchase = selectedPurchase else { return }
+        startPhoneCallDraft(for: purchase)
+    }
+
+    private func startEmailDraftForSelectedPurchase() {
+        guard let purchase = selectedPurchase,
+              let provider = purchase.provider else { return }
+
+        let relatedCorrespondence: CorrespondenceRecord?
+        if let selectedCorrespondence,
+           selectedCorrespondence.purchase?.persistentModelID == purchase.persistentModelID {
+            relatedCorrespondence = selectedCorrespondence
+        } else {
+            relatedCorrespondence = nil
+        }
+
+        startEmailDraft(for: provider, purchase: purchase, replyTo: relatedCorrespondence)
+    }
+
+    private func startPhoneCallDraft(_ purchase: Purchase, draft: InteractionDraft) {
+        selectedPurchase = purchase
+        interactionEditorPresentation = .draft(purchase, draft)
+    }
+
+    private func startEmailDraft(
+        for provider: Organisation,
+        purchase: Purchase? = nil,
+        replyTo: CorrespondenceRecord? = nil
+    ) {
+        providerEmailComposerPresentation = ProviderEmailComposerPresentation(
+            provider: provider,
+            linkedPurchases: purchasesForProvider(provider),
+            initialPurchase: purchase,
+            initialCorrespondence: replyTo
+        )
+    }
+
+    private func startPhoneCallDraft(for purchase: Purchase) {
         guard let provider = purchase.provider else {
             presentOperationResult(
                 title: "Provider Unavailable",
@@ -1333,15 +1444,15 @@ struct AppRootView: View {
             summary: "Dialed \(target.phoneNumber)",
             autoDurationStartDate: nil
         )
-        interactionEditorPresentation = .draft(purchase, draft)
+        startPhoneCallDraft(purchase, draft: draft)
     }
 
     private func preferredPhoneCallTarget(for provider: Organisation) -> PhoneCallTarget? {
-        if let customerServiceNumber = AppRootFormatting.nonEmpty(provider.customerServiceNumber) {
-            return PhoneCallTarget(phoneNumber: customerServiceNumber, contactName: "Customer Service")
-        }
         if let phoneNumber = AppRootFormatting.nonEmpty(provider.phoneNumber) {
             return PhoneCallTarget(phoneNumber: phoneNumber, contactName: nil)
+        }
+        if let customerServiceNumber = AppRootFormatting.nonEmpty(provider.customerServiceNumber) {
+            return PhoneCallTarget(phoneNumber: customerServiceNumber, contactName: "Customer Service")
         }
 
         let contacts = provider.contacts
@@ -1404,6 +1515,22 @@ struct AppRootView: View {
 
     private func formattedReminderState(_ reminder: Reminder) -> String {
         AppRootFormatting.formattedReminderState(reminder)
+    }
+
+    private func followUpInteractionSubject(for reminder: Reminder, type: InteractionType) -> String {
+        let baseSubject = reminder.sourceInteraction?.subject
+            ?? reminder.title.replacingOccurrences(of: "Follow-up: ", with: "")
+
+        switch type {
+        case .phoneCall:
+            return "Follow-up call: \(baseSubject)"
+        case .email:
+            return "Follow-up email: \(baseSubject)"
+        case .letter:
+            return "Follow-up letter: \(baseSubject)"
+        default:
+            return "Follow-up \(type.rawValue): \(baseSubject)"
+        }
     }
 
     private func handleOnAppear() {

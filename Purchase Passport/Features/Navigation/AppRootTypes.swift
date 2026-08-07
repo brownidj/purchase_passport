@@ -106,6 +106,8 @@ struct InteractionDraft: Identifiable {
     let followUpDate: Date?
     let durationMinutes: Int?
     let autoDurationStartDate: Date?
+    let relatedInteraction: Interaction?
+    let relatedCorrespondence: CorrespondenceRecord?
 
     init(
         id: UUID = UUID(),
@@ -123,7 +125,9 @@ struct InteractionDraft: Identifiable {
         nextAction: String = "",
         followUpDate: Date? = nil,
         durationMinutes: Int? = nil,
-        autoDurationStartDate: Date? = nil
+        autoDurationStartDate: Date? = nil,
+        relatedInteraction: Interaction? = nil,
+        relatedCorrespondence: CorrespondenceRecord? = nil
     ) {
         self.id = id
         self.occurredAt = occurredAt
@@ -141,6 +145,30 @@ struct InteractionDraft: Identifiable {
         self.followUpDate = followUpDate
         self.durationMinutes = durationMinutes
         self.autoDurationStartDate = autoDurationStartDate
+        self.relatedInteraction = relatedInteraction
+        self.relatedCorrespondence = relatedCorrespondence
+    }
+}
+
+struct ProviderEmailComposerPresentation: Identifiable {
+    let id: UUID
+    let provider: Organisation
+    let linkedPurchases: [Purchase]
+    let initialPurchase: Purchase?
+    let initialCorrespondence: CorrespondenceRecord?
+
+    init(
+        id: UUID = UUID(),
+        provider: Organisation,
+        linkedPurchases: [Purchase],
+        initialPurchase: Purchase? = nil,
+        initialCorrespondence: CorrespondenceRecord? = nil
+    ) {
+        self.id = id
+        self.provider = provider
+        self.linkedPurchases = linkedPurchases
+        self.initialPurchase = initialPurchase
+        self.initialCorrespondence = initialCorrespondence
     }
 }
 

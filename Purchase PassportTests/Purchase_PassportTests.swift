@@ -373,6 +373,32 @@ struct Purchase_PassportTests {
         #expect(ProviderCorrespondenceService.matches(email, provider: provider))
     }
 
+    @Test func providerEmailCompositionServicePrefersProviderRecipientWhenReplyingToOutgoingEmail() {
+        let provider = Organisation(name: "Townsville Windows & Screens", emailAddress: "admin@twscreens.com.au")
+        let correspondence = CorrespondenceRecord(
+            occurredAt: .now,
+            sender: "David Browning <david@example.com>",
+            recipients: "Paul <admin@twscreens.com.au>",
+            subject: "Screen access issue"
+        )
+
+        let recipient = ProviderEmailCompositionService.replyRecipient(for: correspondence, provider: provider)
+
+        #expect(recipient == "admin@twscreens.com.au")
+    }
+
+    @Test func providerEmailCompositionServiceBuildsMailtoDraftURL() {
+        let url = ProviderEmailCompositionService.composeMailURL(
+            to: "admin@twscreens.com.au",
+            subject: "Quote follow-up",
+            body: "Hello Paul,\n\nCan you confirm the booking?"
+        )
+
+        #expect(url?.absoluteString.contains("mailto:admin@twscreens.com.au") == true)
+        #expect(url?.absoluteString.contains("subject=Quote%20follow-up") == true)
+        #expect(url?.absoluteString.contains("body=Hello%20Paul") == true)
+    }
+
     @Test func communicationIntelligenceParsesEmailFile() throws {
         let emailFileURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)

@@ -35,6 +35,7 @@ struct PurchaseDetailSectionView: View {
     let onSelectReminder: (Reminder) -> Void
     let onAddInteraction: () -> Void
     let onCallProvider: () -> Void
+    let onEmailProvider: () -> Void
     let onSelectInteraction: (Interaction) -> Void
     let onAddComplaint: () -> Void
     let onSelectComplaint: (ComplaintCase) -> Void
@@ -194,6 +195,7 @@ struct PurchaseDetailSectionView: View {
                         Button("Add Interaction", action: onAddInteraction)
                         if purchase.provider != nil {
                             Button("Call Provider", action: onCallProvider)
+                            Button("Email Provider", action: onEmailProvider)
                         }
 
                         if interactionFeedSections.isEmpty {

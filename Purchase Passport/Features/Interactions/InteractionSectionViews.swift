@@ -379,8 +379,44 @@ struct InteractionDetailSectionView: View {
                         LabeledContent("Detailed Notes", value: interaction.detailedNotes ?? "Not set")
                         LabeledContent("Commitments", value: interaction.promisesOrCommitments ?? "Not set")
                         LabeledContent("Duration", value: interaction.durationMinutes.map { "\($0) min" } ?? "Not set")
-                        LabeledContent("Next Action", value: interaction.nextAction ?? "Not set")
                         LabeledContent("Follow-up Date", value: formattedDate(interaction.followUpDate))
+                        if interaction.followUpDate != nil {
+                            LabeledContent("Follow-up Notes", value: interaction.nextAction ?? "Not set")
+                        }
+                    }
+
+                    if interaction.relatedCorrespondence != nil || interaction.relatedInteraction != nil {
+                        Section("Linked Context") {
+                            if let relatedCorrespondence = interaction.relatedCorrespondence {
+                                LabeledContent("Email Subject", value: relatedCorrespondence.subject)
+                                LabeledContent(
+                                    "Email Date",
+                                    value: formattedDateTime(relatedCorrespondence.occurredAt, true)
+                                )
+                                LabeledContent("From", value: relatedCorrespondence.sender ?? "Not set")
+                                LabeledContent(
+                                    "Email Details",
+                                    value: relatedCorrespondence.fullBody
+                                        ?? relatedCorrespondence.bodyPreview
+                                        ?? "Not set"
+                                )
+                            }
+
+                            if let relatedInteraction = interaction.relatedInteraction {
+                                LabeledContent("Interaction Subject", value: relatedInteraction.subject)
+                                LabeledContent("Interaction Type", value: relatedInteraction.type.rawValue)
+                                LabeledContent(
+                                    "Interaction Date",
+                                    value: formattedDateTime(relatedInteraction.occurredAt, true)
+                                )
+                                LabeledContent(
+                                    "Interaction Details",
+                                    value: relatedInteraction.detailedNotes
+                                        ?? relatedInteraction.summary
+                                        ?? "Not set"
+                                )
+                            }
+                        }
                     }
                 }
                 .navigationTitle(interaction.subject)

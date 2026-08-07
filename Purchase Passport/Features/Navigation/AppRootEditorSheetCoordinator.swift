@@ -109,6 +109,20 @@ enum AppRootEditorSheetCoordinator {
         }
     }
 
+    static func providerEmailComposerSheet(
+        _ presentation: ProviderEmailComposerPresentation,
+        onSave: @escaping (Interaction) -> Void
+    ) -> some View {
+        ProviderEmailComposerSheet(
+            provider: presentation.provider,
+            linkedPurchases: presentation.linkedPurchases,
+            initialPurchase: presentation.initialPurchase,
+            initialCorrespondence: presentation.initialCorrespondence,
+            onCommit: onSave
+        )
+        .frame(minWidth: 760, minHeight: 760)
+    }
+
     @ViewBuilder
     static func complaintEditorSheet(
         _ presentation: ComplaintEditorPresentation,

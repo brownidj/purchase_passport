@@ -17,6 +17,8 @@ final class Reminder {
     var updatedAt: Date
 
     var purchase: Purchase?
+    var sourceInteraction: Interaction?
+    var followUpInteractionType: InteractionType?
 
     init(
         title: String,
@@ -31,7 +33,9 @@ final class Reminder {
         completedAt: Date? = nil,
         createdAt: Date = .now,
         updatedAt: Date = .now,
-        purchase: Purchase? = nil
+        purchase: Purchase? = nil,
+        sourceInteraction: Interaction? = nil,
+        followUpInteractionType: InteractionType? = nil
     ) {
         self.title = title
         self.type = type
@@ -46,5 +50,7 @@ final class Reminder {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.purchase = purchase
+        self.sourceInteraction = sourceInteraction
+        self.followUpInteractionType = followUpInteractionType
     }
 }
