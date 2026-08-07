@@ -110,6 +110,7 @@ struct ProviderDetailSectionView: View {
     @State private var isPhoneCallsExpanded = false
     @State private var isCalendarExpanded = false
     @State private var isLinkedEmailsExpanded = false
+    @State private var isLinkedMessagesExpanded = false
     @State private var isContactDetailsExpanded = false
     @State private var isAddressesExpanded = false
     @State private var isNotesExpanded = false
@@ -229,6 +230,10 @@ struct ProviderDetailSectionView: View {
                         }
                     }
 
+                    collapsibleSection("Linked Messages", isExpanded: $isLinkedMessagesExpanded) {
+                        ProviderMessagesSectionView(provider: provider)
+                    }
+
                     collapsibleSection("Contact Details", isExpanded: $isContactDetailsExpanded) {
                         LabeledContent("Email", value: provider.emailAddress ?? "Not set")
                         LabeledContent("Phone", value: provider.phoneNumber ?? "Not set")
@@ -319,6 +324,205 @@ struct ProviderDetailSectionView: View {
             } label: {
                 Text(title)
                     .font(.headline)
+            }
+        }
+    }
+}
+
+private struct ProviderMessagesSectionView: View {
+    @Query(sort: \Organisation.name) private var providers: [Organisation]
+
+    let provider: Organisation
+
+    @State private var conversations: [ProviderMessageConversation] = []
+    @State private var debugSearch: ProviderMessageSearchDebug?
+    @State private var isShowingDebugFields = false
+    @State private var isLoading = false
+    @State private var statusMessage: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Button("Update Linked Messages") {
+                    Task {
+                        await refreshLinkedMessages()
+                    }
+                }
+
+                Button("Choose Messages Folder") {
+                    Task {
+                        await chooseMessagesFolder()
+                    }
+                }
+
+                Button(isShowingDebugFields ? "Hide Debug Fields" : "Show Debug Fields") {
+                    isShowingDebugFields.toggle()
+                }
+
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
+
+            if let statusMessage {
+                Text(statusMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if isShowingDebugFields, let debugSearch {
+                debugContent(debugSearch)
+            }
+
+            content
+        }
+        .task(id: provider.persistentModelID) {
+            debugSearch = ProviderMessageIndexService.debugSearch(for: provider)
+            await loadLinkedMessages()
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if isLoading && conversations.isEmpty {
+            ProgressView("Loading linked messages…")
+                .controlSize(.small)
+        } else if conversations.isEmpty {
+            Text("No linked messages were found for this provider.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        } else {
+            ForEach(conversations) { conversation in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .top) {
+                        Text(conversation.conversationLabel)
+                            .font(.headline)
+                        Spacer()
+                        if let latestMessageAt = conversation.latestMessageAt {
+                            Text(latestMessageAt.formatted(date: .abbreviated, time: .shortened))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+
+                    Text("\(conversation.messageCount) message(s) • matched by \(conversation.matchReasons.joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if conversation.fileName != conversation.conversationLabel {
+                        Text("Source file: \(conversation.fileName)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ForEach(conversation.messages.suffix(3)) { message in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(message.occurredAt.formatted(date: .abbreviated, time: .shortened)) • \(message.type)")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            if !message.text.isEmpty {
+                                Text(message.text)
+                                    .font(.caption)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            if !message.attachments.isEmpty {
+                                Text("Attachments: \(message.attachments.joined(separator: ", "))")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    private func loadLinkedMessages() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            conversations = try ProviderMessageIndexService.linkedConversations(for: provider)
+                .sorted { lhs, rhs in
+                    switch (lhs.latestMessageAt, rhs.latestMessageAt) {
+                    case let (lhsDate?, rhsDate?):
+                        return lhsDate > rhsDate
+                    case (.some, .none):
+                        return true
+                    case (.none, .some):
+                        return false
+                    case (.none, .none):
+                        return lhs.conversationLabel.localizedCaseInsensitiveCompare(rhs.conversationLabel) == .orderedAscending
+                    }
+                }
+            statusMessage = nil
+        } catch let error as ProviderMessageIndexService.IndexError {
+            conversations = []
+            statusMessage = error.localizedDescription
+        } catch {
+            conversations = []
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func refreshLinkedMessages() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            let result = try ProviderMessageIndexService.refreshIndex(for: providers)
+            conversations = result.record(for: provider)?.conversations ?? []
+            statusMessage = "Updated linked messages index at \(result.outputURL.path)."
+        } catch let error as ProviderMessageIndexService.IndexError {
+            statusMessage = error.localizedDescription
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func chooseMessagesFolder() async {
+        do {
+            _ = try await MainActor.run {
+                try ProviderMessageIndexService.chooseMessagesDirectory()
+            }
+            debugSearch = ProviderMessageIndexService.debugSearch(for: provider)
+            await refreshLinkedMessages()
+        } catch let error as ProviderMessageIndexService.IndexError where error == .directorySelectionCancelled {
+            return
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    @ViewBuilder
+    private func debugContent(_ debugSearch: ProviderMessageSearchDebug) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Debug search terms")
+                .font(.headline)
+
+            if debugSearch.terms.isEmpty {
+                Text("No provider or contact values are available for message matching.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(debugSearch.terms) { term in
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(term.category) • \(term.label)")
+                            .font(.caption.weight(.semibold))
+                        Text("Raw: \(term.rawValue)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text("Normalized: \(term.normalizedValue)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
     }
